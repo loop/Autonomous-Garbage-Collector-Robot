@@ -9,6 +9,8 @@ public class MainApp {
 	static int numberOfMaps = 0;
 	static List<String> argumentOrder = new LinkedList<String>();
 	static List<String> mapOutputNames = new LinkedList<String>();
+	
+	static Bot cleaner1 = new Bot(0, true);
 
 	/**
 	 * @param args
@@ -28,10 +30,13 @@ public class MainApp {
 
 			if (test.equals("-multi")) {
 				argumentOrder.add(args[i]);
+				cleaner1.setMode(true);
 			} else if (test.equals("-explore")) {
 				argumentOrder.add(args[i]);
+				cleaner1.explore();
 			} else if (test.equals("-solo")) {
 				argumentOrder.add(args[i]);
+				cleaner1.setMode(false);
 			} else if (test.equals("-map")) {
 				argumentOrder.add(args[i]);
 
@@ -42,13 +47,16 @@ public class MainApp {
 						mapOutputNames.add(checkNext);
 						numberOfMaps++;
 						i++;
+						cleaner1.map(checkNext);
 					} else {
 						numberOfMaps++;
 						mapOutputNames.add("output" + numberOfMaps);
+						cleaner1.map(null);
 					}
 				} else {
 					numberOfMaps++;
 					mapOutputNames.add("output" + numberOfMaps);
+					cleaner1.map(null);
 				}
 
 			} else if (test.equals("-collect")) {
@@ -186,6 +194,8 @@ public class MainApp {
 							System.exit(0);
 						}
 					}
+					cleaner1.collect(Integer.parseInt(checkX1), Integer.parseInt(checkY1), 
+							Integer.parseInt(checkX2), Integer.parseInt(checkY2));
 					argumentOrder.add(args[i]);
 					i = i + 4;
 
