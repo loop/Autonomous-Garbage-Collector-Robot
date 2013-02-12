@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/**Creates a top-leve window with all the sensor data about a Bot 
+/**Creates a top-level window with all the sensor data about a Bot 
  * 
  * @author Adrian Bocai
  *
