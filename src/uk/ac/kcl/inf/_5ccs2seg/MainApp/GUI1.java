@@ -6,6 +6,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 public class GUI1 extends JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JButton saveMap;
 	private JButton exploreMap;
 	private JButton switchSolo;

@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MasterControlProgram {
-	
+
 	private boolean gui = false;
 	private int numberOfMaps = 0;
 	private List<String> argumentOrder = new LinkedList<String>();
@@ -13,28 +13,29 @@ public class MasterControlProgram {
 	Bot cleaner2 = new Bot(1, false);
 	Bot cleaner3 = new Bot(2, false);
 
-	private int maxSizeOfX = 100;
-	private int maxSizeOfY = 10;
-	
-	private int[][] mapRepresentation = new int[maxSizeOfY][maxSizeOfX];
-	
-	public MasterControlProgram(){
-		for(int i = 0; i < maxSizeOfY; i++){
-			for(int j = 0; j < maxSizeOfX; j++){
-				mapRepresentation[i][j] = randomNumber(0,4);
+	// private int[][] mapRepresentation = new int[maxSizeOfY][maxSizeOfX];
+	private GridMap mapRepresentation = new GridMap();
+
+	private int maxSizeOfX = mapRepresentation.getMaxX();
+	private int maxSizeOfY = mapRepresentation.getMaxY();
+
+	public MasterControlProgram() {
+		for (int i = 0; i < maxSizeOfY; i++) {
+			for (int j = 0; j < maxSizeOfX; j++) {
+				mapRepresentation.setSts(i, j, randomNumber(0, 4));
 			}
 		}
-		
-		for(int i = 0; i < maxSizeOfY; i++){
-			for(int j = 0; j < maxSizeOfX; j++){
-				System.out.print(mapRepresentation[i][j]);
+
+		for (int i = 0; i < maxSizeOfY; i++) {
+			for (int j = 0; j < maxSizeOfX; j++) {
+				System.out.print(mapRepresentation.getSts(i, j));
 			}
 			System.out.println();
 		}
 	}
 
 	private int randomNumber(int min, int max) {
-		int temp = min + (int)(Math.random() * ((max - min) + 1));
+		int temp = min + (int) (Math.random() * ((max - min) + 1));
 		return temp;
 	}
 
@@ -77,7 +78,5 @@ public class MasterControlProgram {
 	public Bot getCleaner1() {
 		return cleaner1;
 	}
-
-	
 
 }
