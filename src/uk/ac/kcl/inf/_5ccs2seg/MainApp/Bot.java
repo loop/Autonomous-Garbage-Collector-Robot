@@ -1,5 +1,6 @@
 package uk.ac.kcl.inf._5ccs2seg.MainApp;
 
+
 import javaclient3.FiducialInterface;
 import javaclient3.GripperInterface;
 import javaclient3.PlayerClient;
@@ -7,6 +8,7 @@ import javaclient3.PlayerException;
 import javaclient3.Position2DInterface;
 import javaclient3.RangerInterface;
 import javaclient3.structures.PlayerConstants;
+import javaclient3.structures.PlayerPose2d;
 import javaclient3.structures.fiducial.PlayerFiducialItem;
 
 /**
@@ -33,10 +35,10 @@ public class Bot {
 	private int gripSts;
 	private PlayerFiducialItem[] fidData;
 	private int fidCount;
+	private double heading;
 
-	// flag variables
-	private boolean multi = true;
-	private boolean mapped = false;
+	
+	 private final static int PRECISION = 250;
 
 	// constants
 	public final int OPEN = 1;
@@ -59,7 +61,12 @@ public class Bot {
 	private int count = 1;
 	private Debug deb = null;
 	private int botNo;
-
+	
+	/**
+	 * 
+	 * @param index
+	 * @param debug
+	 */
 	public Bot(int index, boolean debug) {
 		try {
 			robot = new PlayerClient("localhost", 6665);
@@ -87,15 +94,12 @@ public class Bot {
 			public void run() {
 				while (true) {
 					while (!ranger.isDataReady()) {
-						try {
-							Thread.sleep(25);
-						} catch (InterruptedException e) {
-						}
+						try {Thread.sleep(25);} 
+						catch (InterruptedException e) {}
 					}
 					rangerReadings = ranger.getData().getRanges();
-					try {
-						Thread.sleep(25);
-					} catch (InterruptedException e) {
+					try {Thread.sleep(25);} 
+					catch (InterruptedException e) {
 					}
 				}
 			}
@@ -115,6 +119,7 @@ public class Bot {
 					x = pos2D.getX();
 					y = pos2D.getY();
 					yaw = pos2D.getYaw();
+					heading = yaw*180/Math.PI;
 					try {
 						Thread.sleep(25);
 					} catch (InterruptedException e) {
@@ -182,7 +187,7 @@ public class Bot {
 	 * @param millis
 	 *            the time given in milliseconds.
 	 */
-	public static void pause(long millis) {
+	public synchronized void pause(long millis) {
 		try {
 			Thread.sleep(millis);
 		} catch (InterruptedException e) {
@@ -192,7 +197,7 @@ public class Bot {
 	/**
 	 * Updates the speed and turn rate of the robot
 	 */
-	private void updateSpeed() {
+	private synchronized void updateSpeed() {
 		pos2D.setSpeed(fSpeed, tRate);
 	}
 
@@ -202,7 +207,7 @@ public class Bot {
 	 * @param speed
 	 *            the required speed in meters per second.
 	 */
-	public void setSpeed(double speed) {
+	public synchronized void setSpeed(double speed) {
 		fSpeed = speed;
 		updateSpeed();
 	}
@@ -213,15 +218,21 @@ public class Bot {
 	 * @param rate
 	 *            the required turn rate in radians per second.
 	 */
-	public void setTRate(double rate) {
+	public synchronized void setTRate(double rate) {
 		tRate = rate;
 		updateSpeed();
 	}
+	
+	public synchronized void moveTo(double x, double y) {
+		PlayerPose2d pose = new PlayerPose2d(x, y, 0);
+		pos2D.setPosition(pose, new PlayerPose2d(), 1);
+	}
+
 
 	/**
 	 * Stops the robot.
 	 */
-	public void stop() {
+	public synchronized void stop() {
 		fSpeed = 0;
 		tRate = 0;
 		updateSpeed();
@@ -232,13 +243,89 @@ public class Bot {
 	 * 
 	 * @param comand
 	 */
-	public void gripper(int comand) {
+	public synchronized void gripper(int comand) {
 		if (comand == CLOSE) {
 			grip.close();
 		} else {
 			grip.open();
 		}
 	}
+	
+	
+	
+	/**@param ang the angle the robot will turn to
+     */
+    public synchronized void turnTo(double ang){
+    	double turnDirection;
+    	
+    	if (ang == 180){ang = 179.9;}
+    	else if (ang == -180){ang = -179.9;}
+    	else if (ang >= 0 && ang < 0.2){ang = 0.2;}
+    	else if (ang <= 0 && ang > -0.2){ang = -0.2;}
+    	
+    	if (Math.abs((ang - getHead())) < 0.1) {
+    		stop(); return; 
+        }
+    	
+    	double diff = ang - getHead();
+    	if (diff<0) diff = diff + 360;
+    	if (diff<180) {
+    		turnDirection = 1;
+    	} else {
+    		turnDirection = -1;
+    	}
+    	
+    	double difference = Math.abs(round(getHead()-ang));
+    	while (difference > 25) {          
+            difference = Math.abs(round(getHead()-ang));
+            //System.out.println("diff: " + difference);
+            setTRate(turnDirection*difference/(PRECISION*100));
+            pause(25);
+        }
+    	System.out.println("finish");
+    	stop();
+    }
+    
+    private synchronized double round(double no) {
+    	return(Math.round(no*PRECISION));
+	}
+
+    /**Will get the angle the robot needs to turn to face a location on the map straight on
+     * 
+     * @param x x-coordinate of location
+     * @param y y-coordinate of location
+     * @return the heading the robot needs to have
+     */
+    public synchronized double getAng(double x, double y, double x2, double y2){
+		int sign = 1;
+		double res;
+    	
+		if (Math.abs(x - x2) < 0.1){
+			System.out.println("Predef same x");
+			if (y < y2) {res = -90;}
+			else {res = 90;}
+		}
+		else if (Math.abs(y - y2) < 0.1) {
+			System.out.println("Predef same y");
+			if (x < x2) {res = 180;}
+			else {res = 0;}
+		}
+		else {
+			if (y < y2){sign = -1;}
+			else if (y > y2){sign = 1;}
+			
+    	
+			res = Math.atan(Math.abs((y - y2))/Math.abs((x-x2)));
+			res = res*180/Math.PI;
+    	
+			if (x < x2) {res = 180 - res;}
+    	
+			res = res * sign;
+		}
+    	System.out.println("Angle " + res);
+    	return res;
+    	
+    }
 
 	// ACCESSOR METHODS:
 
@@ -279,6 +366,12 @@ public class Bot {
 	public synchronized double getYaw() {
 		return yaw;
 	}
+	
+	/**@return the yaw of the bot in degrees.
+     */
+    public synchronized double getHead() {
+        return heading;
+    }
 
 	/**
 	 * @return if the gripper is open, closed or in transition
@@ -318,94 +411,9 @@ public class Bot {
 	public void debug() {
 		if( deb == null) {deb = new Debug(this, botNo);}
 	}
-
-	// ROBOT COMMAND METHODS:
-
-	/**
-	 * Sets the robot to multi or solo mode
-	 * 
-	 * @param flag
-	 *            true for multi, false for solo
-	 */
-	public void setMode(boolean flag) {
-		multi = flag;
-	}
-
-	/**
-	 * The robot(s) will start to explore and map the environment
-	 */
-	public void explore() {
-		if (multi) {
-			// new Navigate(this).multi();
-			System.out
-					.println("Exploring mappig envi(muti) and probably returning data structure");
-			mapped = true;
-		} else {
-			// new Navigate(this).solo();
-			System.out
-					.println("Exploring mappig envi(solo) and probably returning data structure");
-			mapped = true;
-		}
-	}
-
-	/**
-	 * With the help of the map the robot(s) will start to pick up the garbage
-	 * and put it into the Collection Area. Which is:
-	 * 
-	 * @param x1
-	 *            South of this x-coordinate
-	 * @param y1
-	 *            East of this y-coordinate
-	 * @param x2
-	 *            North of this x-coordinate
-	 * @param y2
-	 *            West of this y-coordinate
-	 */
-	public void collect(int x1, int y1, int x2, int y2) {
-		if (mapped) {
-			if (multi) {
-				// new Clean(x1,y1,x2,y2,this).multi();
-				System.out
-						.println("Collecting garabage and putting it in the trash (multi)"
-								+ " x1: "
-								+ x1
-								+ " y1: "
-								+ y1
-								+ " x2: "
-								+ x2
-								+ " y2: " + y2);
-			} else {
-				// new Clean(x1,y1,x2,y2,this).solo();
-				System.out
-						.println("Collecting garabage and putting it in the trash (solo)"
-								+ "x1: "
-								+ x1
-								+ " y1: "
-								+ y1
-								+ " x2: "
-								+ x2
-								+ " y2: " + y2);
-			}
-		} else {
-			explore();
-			collect(x1, y2, x2, y2);
-		}
-	}
-
-	/**
-	 * Outputs a visual representation of the current map.
-	 * 
-	 * @param fileName
-	 *            the desired name for the outputted map.
-	 */
-	public void map(String fileName) {
-		if (fileName != null && mapped) {
-			// new outMap(fileName, datastructure);
-			System.out.println("Map with the name " + fileName + ".jpg");
-		} else if (mapped) {
-			// new outMap("output" + count, datastructure);
-			System.out.println("Map with the name output" + count + ".jpg");
-			count++;
-		}
-	}
+	
+	
+	
 }
+
+	
