@@ -4,17 +4,26 @@ package uk.ac.kcl.inf._5ccs2seg.MainApp;
  * The grid representation of the map stored in a 2D array (0 - Unexplored; 1 -
  * Free; 2 - Occupied; 3 - Garbage)
  * 
- * @author Adrian Bocai
+ * @author Adrian Bocai, John Murray
  */
 public class GridMap {
 
-	private int[][] grid;
-	private int maxX = 200;
-	private int maxY = 136;
+	private final int[][] grid;
+	private final static int maxX = 200;
+	private final static int maxY = 136;
+	private final int cellsPerMeter = 4;
 
 	// this assumes a player map no bigger than (25,17)
 	public GridMap() {
 		this.grid = new int[maxY][maxX];
+
+		// initialise grid to unexplored
+		for (int i = 0; i < maxX; i++) {
+			for (int j = 0; j < maxY; j++) {
+				grid[j][i] = 0;
+			}
+		}
+
 	}
 
 	/**
@@ -41,9 +50,8 @@ public class GridMap {
 	 * @param value
 	 */
 	public synchronized void setSts(double x, double y, int value) {
-		double[] arr = locMid(x, y);
-		int[] arr2 = convToIndex(arr[0], arr[1]);
-		grid[arr2[0]][arr2[1]] = value;
+		int[] arr = coordToArrayIndexCalc(x, y);
+		grid[arr[0]][arr[1]] = value;
 	}
 
 	/**
@@ -57,7 +65,6 @@ public class GridMap {
 	 */
 	public synchronized int getSts(int i, int j) {
 		return grid[i][j];
-
 	}
 
 	/**
@@ -70,13 +77,12 @@ public class GridMap {
 	 * @return status of cell expressed as integer
 	 */
 	public synchronized int getSts(double x, double y) {
-		int[] arr = convToIndex(x, y);
+		int[] arr = coordToArrayIndexCalc(x, y);
 		return grid[arr[0]][arr[1]];
-
 	}
 
 	/**
-	 * Returns the midpoint of a cell that the coordinates reside in
+	 * Returns the indexes of a cell that the coordinates reside in
 	 * 
 	 * @param x
 	 *            - x coordinate of cell
@@ -84,34 +90,32 @@ public class GridMap {
 	 *            - y coordinate of cell
 	 * @return an array with the coordinates of the cell
 	 */
-	private static double[] locMid(double x, double y) {
-		int sX = 1;
-		int sY = 1;
-		if (x < 0) {
-			sX = -1;
-		}
-		if (y < 0) {
-			sY = -1;
-		}
-
-		x = ((int) (x * 1000));
-		x = x / 1000;
-		y = ((int) (y * 1000));
-		y = y / 1000;
-		int modX = (int) (Math.abs(x - (int) x) * 1000);
-		int modY = (int) (Math.abs(y - (int) y) * 1000);
-
-		double nModX = near(modX);
-		double nModY = near(modY);
-		x = Math.abs((int) x) + nModX;
-		y = Math.abs((int) y) + nModY;
-		x = x * sX;
-		y = y * sY;
-
-		double[] arr = new double[2];
-		arr[0] = x;
-		arr[1] = y;
-		return arr;
+	private int[] coordToArrayIndexCalc(double x, double y) {
+		int[] indexes = new int[2];
+		int tempX = (int) (x * cellsPerMeter) + (maxX / 2);
+		int tempY = (int) (y * cellsPerMeter) + (maxY / 2);
+		indexes[0] = tempX;
+		indexes[1] = tempY;
+		return indexes;
+	}
+	
+	/**
+	 * Returns the coordinates of a particular cell.
+	 * Assumes that whatever calls this method knows the array is [x,y]
+	 * 
+	 * @param x
+	 *            - x coordinate of cell
+	 * @param y
+	 *            - y coordinate of cell
+	 * @return an array with the coordinates of the cell in [x,y] format
+	 */
+	public double[] arrayIndexToCoordCalc(int x, int y) {
+		double[] indexes = new double[2];
+		double tempX = (x / cellsPerMeter) - (maxX / 2);
+		double tempY = (y / cellsPerMeter) - (maxY / 2);
+		indexes[0] = tempX;
+		indexes[1] = tempY;
+		return indexes;
 	}
 
 	private static double near(int val) {
@@ -142,44 +146,6 @@ public class GridMap {
 	}
 
 	/**
-	 * Converts the x and y coordinates of the midpoint of a cell to an i and j
-	 * array index
-	 * 
-	 * @param x
-	 *            - x coordinate of cell
-	 * @param y
-	 *            - y coordinate of cell
-	 * @return array with arr[0] = i and arr[1] = j;
-	 */
-	private static int[] convToIndex(double x, double y) {
-		int[] arr = new int[2];
-
-		arr[0] = (int) ((y + 16.875) / 0.25);
-		arr[1] = (int) ((x + 24.875) / 0.25);
-
-		return arr;
-	}
-
-	/**
-	 * Converts the i and j array index to the x and y coordinates of the
-	 * midpoint of a cell
-	 * 
-	 * @param i
-	 *            - index of the row
-	 * @param j
-	 *            - index of the column
-	 * @return array with arr[0] = x and arr[1] = y;
-	 */
-	public static double[] convToCoord(int i, int j) {
-		double[] arr = new double[2];
-
-		arr[0] = -24.875 + 0.25 * j;
-		arr[1] = -16.875 + 0.25 * i;
-
-		return arr;
-	}
-
-	/**
 	 * Prints the array (will be use only by the programmers to test and debug)
 	 */
 	public synchronized String toString() {
@@ -190,25 +156,6 @@ public class GridMap {
 
 			for (int j = 0; j < 200; j++) {
 				res = res + grid[i][j] + " | ";
-			}
-		}
-
-		return res;
-	}
-
-	/**
-	 * Prints the array with the corresponding coordinates to each cell
-	 */
-	public synchronized String toStringCo() {
-		String res = "";
-		double[] arr = new double[2];
-		for (int i = 0; i < 136; i++) {
-			res = res + "\n" + "| ";
-
-			for (int j = 0; j < 200; j++) {
-				arr = convToCoord(i, j);
-				res = res + grid[i][j] + "(" + arr[0] + " , " + arr[1] + ")"
-						+ " | ";
 			}
 		}
 

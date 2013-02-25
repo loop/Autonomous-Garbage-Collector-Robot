@@ -22,13 +22,10 @@ public class Input {
 
 			if (test.equals("-multi")) {
 				mcp.getArgumentOrder().add(args[i]);
-				mcp.getCleaner1().setMode(true);
 			} else if (test.equals("-explore")) {
 				mcp.getArgumentOrder().add(args[i]);
-				mcp.getCleaner1().explore();
 			} else if (test.equals("-solo")) {
 				mcp.getArgumentOrder().add(args[i]);
-				mcp.getCleaner1().setMode(false);
 			} else if (test.equals("-map")) {
 				mcp.getArgumentOrder().add(args[i]);
 
@@ -39,16 +36,13 @@ public class Input {
 						mcp.getMapOutputNames().add(checkNext);
 						mcp.setNumberOfMaps(mcp.getNumberOfMaps() + 1);
 						i++;
-						mcp.getCleaner1().map(checkNext);
 					} else {
 						mcp.setNumberOfMaps(mcp.getNumberOfMaps() + 1);
 						mcp.getMapOutputNames().add("output" + mcp.getNumberOfMaps());
-						mcp.getCleaner1().map(null);
 					}
 				} else {
 					mcp.setNumberOfMaps(mcp.getNumberOfMaps() + 1);
 					mcp.getMapOutputNames().add("output" + mcp.getNumberOfMaps());
-					mcp.getCleaner1().map(null);
 				}
 
 			} else if (test.equals("-collect")) {
@@ -186,9 +180,7 @@ public class Input {
 							System.exit(0);
 						}
 					}
-					mcp.getCleaner1().collect(Integer.parseInt(checkX1), Integer
-							.parseInt(checkY1), Integer.parseInt(checkX2),
-							Integer.parseInt(checkY2));
+
 					mcp.getArgumentOrder().add(args[i]);
 					i = i + 4;
 
