@@ -170,4 +170,7 @@ public class GridMap {
 		return maxY;
 	}
 
+	public int[][] getMap(){
+		return grid;
+	}
 }

@@ -23,7 +23,7 @@ public class MainApp {
 			System.out.println(mcp.getMapOutputNames().remove(0));
 		}
 
-		System.out.println("GUI value is: " + mcp.isGui());
+		System.out.println("GUI value is: " + mcp.getGUI());
 
 	}
 
