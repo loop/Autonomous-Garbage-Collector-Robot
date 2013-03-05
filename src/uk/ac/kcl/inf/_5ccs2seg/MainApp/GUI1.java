@@ -1,8 +1,11 @@
 package uk.ac.kcl.inf._5ccs2seg.MainApp;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -17,9 +20,12 @@ public class GUI1 extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JButton saveMap;
 	private JButton exploreMap;
-	private JButton switchSolo;
-	private JButton switchMulti;
+	private JButton switchSoloMulti;
 	private JButton collectGarbage;
+
+	private BufferedImage map;
+
+	private int[][] grid;
 
 	private JTextField filename;
 	private JTextField x1Drop;
@@ -35,14 +41,21 @@ public class GUI1 extends JFrame {
 	private Controller buttonAction;
 	private JScrollPane mapView;
 
-	private MasterControlProgram mcp;
+	private int maxX;
+	private int maxY;
 
 	public GUI1(MasterControlProgram mcp) {
 		super("Robot GUI");
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		this.mcp = mcp;
+
+		maxX = mcp.getMaxX();
+		maxY = mcp.getMaxY();
+
+		grid = mcp.getMap();
+
 		buttonAction = new Controller(mcp, this);
 		initWidgets();
+		update();
 		pack();
 		setVisible(true);
 
@@ -52,27 +65,27 @@ public class GUI1 extends JFrame {
 
 		saveMap = new JButton("Save");
 		exploreMap = new JButton("Explore");
-		switchSolo = new JButton("Solo");
-		switchMulti = new JButton("Multi");
+		switchSoloMulti = new JButton("Solo");
+		switchSoloMulti.setPreferredSize(new Dimension(70,40));
 		collectGarbage = new JButton("Collect");
+
+		map = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
 
 		saveMap.addActionListener(buttonAction);
 		exploreMap.addActionListener(buttonAction);
-		switchSolo.addActionListener(buttonAction);
-		switchMulti.addActionListener(buttonAction);
+		switchSoloMulti.addActionListener(buttonAction);
 		collectGarbage.addActionListener(buttonAction);
 
-		filename = new JTextField("Enter filename here");
-		x1Drop = new JTextField(" ");
-		x2Drop = new JTextField(" ");
-		x3Drop = new JTextField(" ");
-		x4Drop = new JTextField(" ");
+		filename = new JTextField("Enter filename here", 20);
+		x1Drop = new JTextField("", 2);
+		x2Drop = new JTextField("", 2);
+		x3Drop = new JTextField("", 2);
+		x4Drop = new JTextField("", 2);
 
 		x1Label = new JLabel("x1:");
 		x2Label = new JLabel("x2:");
 		x3Label = new JLabel("x3:");
 		x4Label = new JLabel("x4:");
-
 		setLayout(new BorderLayout(1, 1));
 
 		JPanel a1 = new JPanel();
@@ -86,7 +99,7 @@ public class GUI1 extends JFrame {
 
 		JPanel a3 = new JPanel();
 		a3.add(a2);
-		a3.add(switchSolo);
+		a3.add(switchSoloMulti);
 
 		JPanel b1 = new JPanel();
 		b1.add(x1Label);
@@ -105,18 +118,54 @@ public class GUI1 extends JFrame {
 
 		JPanel b3 = new JPanel();
 		b3.add(b2);
-		b3.add(switchMulti);
-		
-		mapView.add(new MapView(mcp));
+		mapView = new JScrollPane();
+
+		mapView.add(new JLabel(new ImageIcon(map)));
 
 		add(a3, BorderLayout.NORTH);
+		add(new JLabel(new ImageIcon(map)), BorderLayout.CENTER);
 		add(b3, BorderLayout.SOUTH);
-		add(mapView, BorderLayout.CENTER);
 
 	}
 
 	public String getFileName() {
 		return filename.getText();
+	}
+
+	public void update() {
+
+		int red = 0xFF0000;
+		int green = 0x00FF00;
+		int blue = 0x0000FF;
+		int black = 0x000000;
+		int grey = 0x888888;
+		int white = 0xFFFFFF;
+
+		for (int i = 0; i < maxX; i++) {
+			for (int j = 0; j < maxY; j++) {
+				if (grid[i][j] == 0) {
+					map.setRGB(i, j, grey);
+				}
+				if (grid[i][j] == 1) {
+					map.setRGB(i, j, white);
+				}
+				if (grid[i][j] == 2) {
+					map.setRGB(i, j, green);
+				}
+				if (grid[i][j] == 3) {
+					map.setRGB(i, j, red);
+				}
+			}
+		}
+		repaint();
+	}
+
+	public void setMulti() {
+		switchSoloMulti.setText("Multi");		
+	}
+
+	public void setSolo() {
+		switchSoloMulti.setText("Solo");
 	}
 
 }

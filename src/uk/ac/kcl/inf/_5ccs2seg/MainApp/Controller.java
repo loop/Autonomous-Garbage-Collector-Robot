@@ -24,7 +24,7 @@ public class Controller implements ActionListener {
 	public void actionPerformed(ActionEvent action) {
 		String actionRequested = action.getActionCommand();
 		if (actionRequested.equals("Save")) {
-			if (frame.getFileName().length() < 3) {
+			if (frame.getFileName().length() > 3) {
 				model.addMapname(frame.getFileName());
 			} else {
 				JOptionPane
@@ -35,10 +35,16 @@ public class Controller implements ActionListener {
 			}
 		}
 		if (actionRequested.equals("Solo")) {
+			frame.setMulti();
 			model.setSolo(true);
+			model.randomiseMap();
+			frame.update();
 		}
 		if (actionRequested.equals("Multi")) {
+			frame.setSolo();
 			model.setSolo(false);
+			model.randomiseMap();
+			frame.update();
 		}
 		if (actionRequested.equals("Explore")) {
 			JOptionPane.showMessageDialog(frame,

@@ -10,11 +10,11 @@ public class MasterControlProgram {
 	private int numberOfMaps = 0;
 	private List<String> argumentOrder = new LinkedList<String>();
 	private List<String> mapOutputNames = new LinkedList<String>();
-	/*
-	 * Bot cleaner1 = new Bot(0, false); Bot cleaner2 = new Bot(1, false); Bot
-	 * cleaner3 = new Bot(2, false);
-	 */
-	// private int[][] mapRepresentation = new int[maxSizeOfY][maxSizeOfX];
+
+	// Bot cleaner1 = new Bot(0, false);
+	// Bot cleaner2 = new Bot(1, false);
+	// Bot cleaner3 = new Bot(2, false);
+
 	private GridMap mapRepresentation = new GridMap();
 
 	private int maxSizeOfX = mapRepresentation.getMaxX();
@@ -23,19 +23,9 @@ public class MasterControlProgram {
 	public MasterControlProgram() {
 
 		// Initialise gridmap
-		for (int i = 0; i < maxSizeOfY; i++) {
-			for (int j = 0; j < maxSizeOfX; j++) {
-				mapRepresentation.setSts(i, j, randomNumber(0, 4));
-			}
-		}
 
-		// printing out gridmap
-		// temp for debug
 		for (int i = 0; i < maxSizeOfY; i++) {
-			for (int j = 0; j < maxSizeOfX; j++) {
-				System.out.print(mapRepresentation.getSts(i, j));
-			}
-			System.out.println();
+			mapRepresentation.setSts(34, i, 2);
 		}
 	}
 
@@ -73,7 +63,7 @@ public class MasterControlProgram {
 	public boolean getGUI() {
 		return gui;
 	}
-	
+
 	public int[][] getMap() {
 		return mapRepresentation.getMap();
 	}
@@ -87,11 +77,11 @@ public class MasterControlProgram {
 		return numberOfMaps;
 	}
 
-	public int getMaxX(){
+	public int getMaxX() {
 		return maxSizeOfX;
 	}
-	
-	public int getMaxY(){
+
+	public int getMaxY() {
 		return maxSizeOfY;
 	}
 
@@ -113,6 +103,14 @@ public class MasterControlProgram {
 	private int randomNumber(int min, int max) {
 		int temp = min + (int) (Math.random() * ((max - min) + 1));
 		return temp;
+	}
+
+	public void randomiseMap() {
+		for (int i = 0; i < maxSizeOfX; i++) {
+			for (int j = 0; j < maxSizeOfY; j++) {
+				mapRepresentation.setSts(i, j, randomNumber(0, 4));
+			}
+		}
 	}
 
 }

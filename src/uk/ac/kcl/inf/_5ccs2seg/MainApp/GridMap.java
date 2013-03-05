@@ -9,18 +9,18 @@ package uk.ac.kcl.inf._5ccs2seg.MainApp;
 public class GridMap {
 
 	private final int[][] grid;
-	private final static int maxX = 200;
-	private final static int maxY = 136;
+	private final static int maxX = 500;
+	private final static int maxY = 500;
 	private final int cellsPerMeter = 4;
 
 	// this assumes a player map no bigger than (25,17)
 	public GridMap() {
-		this.grid = new int[maxY][maxX];
+		this.grid = new int[maxX][maxY];
 
 		// initialise grid to unexplored
 		for (int i = 0; i < maxX; i++) {
 			for (int j = 0; j < maxY; j++) {
-				grid[j][i] = 0;
+				grid[i][j] = 0;
 			}
 		}
 
