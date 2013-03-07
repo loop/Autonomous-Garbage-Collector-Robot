@@ -6,27 +6,24 @@ import java.util.List;
 public class MasterControlProgram {
 
 	private boolean gui = false;
+	private GUI1 frame;
 	private boolean solo = true;
+    private boolean mapped = false;
 	private int numberOfMaps = 0;
 	private List<String> argumentOrder = new LinkedList<String>();
 	private List<String> mapOutputNames = new LinkedList<String>();
 
-	// Bot cleaner1 = new Bot(0, false);
-	// Bot cleaner2 = new Bot(1, false);
-	// Bot cleaner3 = new Bot(2, false);
-
 	private GridMap mapRepresentation = new GridMap();
+
+	private Bot cleaner1 = new Bot(0, true);
+	private Bot cleaner2 = new Bot(0, false);
+	private Bot cleaner3 = new Bot(0, false);
 
 	private int maxSizeOfX = mapRepresentation.getMaxX();
 	private int maxSizeOfY = mapRepresentation.getMaxY();
 
 	public MasterControlProgram() {
 
-		// Initialise gridmap
-
-		for (int i = 0; i < maxSizeOfY; i++) {
-			mapRepresentation.setSts(34, i, 2);
-		}
 	}
 
 	public void setSolo(boolean solo) {
@@ -35,6 +32,12 @@ public class MasterControlProgram {
 
 	public void setGui(boolean gui) {
 		this.gui = gui;
+	}
+	
+	public void setMap(GridMap map){
+		this.mapRepresentation = map;
+		frame.update();
+		
 	}
 
 	public void setNumberOfMaps(int numberOfMaps) {
@@ -49,13 +52,28 @@ public class MasterControlProgram {
 		this.mapOutputNames = mapOutputNames;
 	}
 
-	/*
-	 * public void setCleaner1(Bot cleaner1) { this.cleaner1 = cleaner1; }
-	 * 
-	 * public void setCleaner2(Bot cleaner2) { this.cleaner2 = cleaner2; }
-	 * 
-	 * public void setCleaner3(Bot cleaner3) { this.cleaner3 = cleaner3; }
-	 */
+	public void setCleaner(int bot, Bot cleaner) {
+		if (bot == 1){
+			this.cleaner1 = cleaner;
+		}
+		if (bot == 2){
+			this.cleaner2 = cleaner;
+		}
+		if (bot == 3){
+			this.cleaner3 = cleaner;
+		}
+	}
+
+	public Bot getCleaner(int bot) {
+		if (bot == 1){
+			return cleaner1;
+		}
+		if (bot == 2){
+			return cleaner2;
+		}
+		return cleaner3;
+	}
+
 	public boolean getSolo() {
 		return solo;
 	}
@@ -66,6 +84,10 @@ public class MasterControlProgram {
 
 	public int[][] getMap() {
 		return mapRepresentation.getMap();
+	}
+	
+	public GridMap getGrid() {
+		return mapRepresentation;
 	}
 
 	public void addMapname(String fileName) {
@@ -92,14 +114,27 @@ public class MasterControlProgram {
 	public List<String> getMapOutputNames() {
 		return mapOutputNames;
 	}
-
-	/*
-	 * public Bot getCleaner1() { return cleaner1; }
-	 * 
-	 * public Bot getCleaner2() { return cleaner2; }
-	 * 
-	 * public Bot getCleaner3() { return cleaner3; }
-	 */
+	
+	/** The robot(s) will start to explore and map the environment
+     */
+    public void explore(){
+    	if(!solo){ 
+    		new Explore(this);   
+    		System.out.println("Exploring mappig envi(muti) and probably returning data structure"); mapped = true;
+    	}
+    	else {
+    		new Explore(this);   
+			System.out.println("Exploring mappig envi(solo) and probably returning data structure"); mapped = true;
+		}			
+    }
+    
+    public void linkFrame(GUI1 frame){
+    	this.frame = frame;
+    }
+    
+    public void updateFrame(){
+    	frame.update();
+    }
 	private int randomNumber(int min, int max) {
 		int temp = min + (int) (Math.random() * ((max - min) + 1));
 		return temp;

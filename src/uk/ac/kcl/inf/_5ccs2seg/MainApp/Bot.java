@@ -1,6 +1,8 @@
 package uk.ac.kcl.inf._5ccs2seg.MainApp;
 
 
+
+
 import javaclient3.FiducialInterface;
 import javaclient3.GripperInterface;
 import javaclient3.PlayerClient;
@@ -9,13 +11,14 @@ import javaclient3.Position2DInterface;
 import javaclient3.RangerInterface;
 import javaclient3.structures.PlayerConstants;
 import javaclient3.structures.PlayerPose2d;
+import javaclient3.structures.PlayerPose3d;
 import javaclient3.structures.fiducial.PlayerFiducialItem;
 
 /**
  * Just a basic robot with all the access and control methods needed to be able
  * to write appropriate autonomous software.
  * 
- * @author Adrian Bocai
+ * @author Adrian Bocai Team Dijkstra
  */
 public class Bot {
 
@@ -47,15 +50,15 @@ public class Bot {
 	public final int FRONT_L = 0;
 	public final int FRONT_M = 1;
 	public final int FRONT_R = 2;
-	public final int BACK_L = 9;
-	public final int BACK_M = 10;
-	public final int BACK_R = 11;
 	public final int LEFT_F = 3;
 	public final int LEFT_M = 4;
 	public final int LEFT_B = 5;
 	public final int RIGHT_F = 6;
 	public final int RIGHT_M = 7;
 	public final int RIGHT_B = 8;
+	public final int BACK_L = 9;
+	public final int BACK_M = 10;
+	public final int BACK_R = 11;
 
 	// other
 	private int count = 1;
@@ -280,10 +283,26 @@ public class Bot {
             difference = Math.abs(round(getHead()-ang));
             //System.out.println("diff: " + difference);
             setTRate(turnDirection*difference/(PRECISION*100));
-            pause(25);
+            pause(50);
         }
     	System.out.println("finish");
     	stop();
+    }
+    
+    public synchronized static double turnBy(double head, double ang) {
+    	double res;
+    	
+    	
+    	if (ang > 0){
+    		res = head + ang;
+    		if (res > 180){res = res - 360;}	
+    	}
+    	else {
+    		res = head + ang;
+    		if (res < -180){res = res + 360;}
+    	}
+    	
+    	return res;
     }
     
     private synchronized double round(double no) {
@@ -339,7 +358,7 @@ public class Bot {
 	/**
 	 * @return a particular sensor reading
 	 * @param index
-	 *            identifies the sensor required
+	 *            identifies the s6ensor required
 	 * 
 	 */
 	public synchronized double getRange(int index) {
@@ -358,7 +377,8 @@ public class Bot {
 	 */
 	public synchronized double getY() {
 		return y;
-	}
+	}	
+
 
 	/**
 	 * @return the yaw of the Bot.
@@ -405,15 +425,28 @@ public class Bot {
 		return tRate;
 	}
 
-	/**
+	/**cleaner1
 	 * Displays a GUI with all the robot data, in order to help with debugging.
 	 */
 	public void debug() {
 		if( deb == null) {deb = new Debug(this, botNo);}
 	}
 	
+	public synchronized void close(){
+		robot.close();
+	}
 	
-	
+	public static void main(String[] args){
+		Bot bla = new Bot(0,true);
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+		}
+		
+		
+		
+	}
 }
 
-	
+		

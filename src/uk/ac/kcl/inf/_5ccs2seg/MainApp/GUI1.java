@@ -25,7 +25,7 @@ public class GUI1 extends JFrame {
 
 	private BufferedImage map;
 
-	private int[][] grid;
+	private MasterControlProgram mcp;
 
 	private JTextField filename;
 	private JTextField x1Drop;
@@ -43,19 +43,20 @@ public class GUI1 extends JFrame {
 
 	private int maxX;
 	private int maxY;
+	private int scale = 2;
 
 	public GUI1(MasterControlProgram mcp) {
 		super("Robot GUI");
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-		maxX = mcp.getMaxX();
-		maxY = mcp.getMaxY();
+		this.mcp = mcp;
 
-		grid = mcp.getMap();
+		maxX = (mcp.getGrid().getMaxX() * scale);
+		maxY = (mcp.getGrid().getMaxY() * scale);
 
 		buttonAction = new Controller(mcp, this);
 		initWidgets();
-		update();
+		updateThreadSetup();
 		pack();
 		setVisible(true);
 
@@ -66,7 +67,7 @@ public class GUI1 extends JFrame {
 		saveMap = new JButton("Save");
 		exploreMap = new JButton("Explore");
 		switchSoloMulti = new JButton("Solo");
-		switchSoloMulti.setPreferredSize(new Dimension(70,40));
+		switchSoloMulti.setPreferredSize(new Dimension(70, 40));
 		collectGarbage = new JButton("Collect");
 
 		map = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
@@ -141,19 +142,31 @@ public class GUI1 extends JFrame {
 		int grey = 0x888888;
 		int white = 0xFFFFFF;
 
-		for (int i = 0; i < maxX; i++) {
-			for (int j = 0; j < maxY; j++) {
-				if (grid[i][j] == 0) {
-					map.setRGB(i, j, grey);
-				}
-				if (grid[i][j] == 1) {
-					map.setRGB(i, j, white);
-				}
-				if (grid[i][j] == 2) {
-					map.setRGB(i, j, green);
-				}
-				if (grid[i][j] == 3) {
-					map.setRGB(i, j, red);
+		int check = 0;
+
+		for (int y = 0; y < (maxY / scale); y++) {
+			for (int x = 0; x < (maxX / scale); x++) {
+				for (int scaleY = 0; scaleY < scale; scaleY++) {
+					for (int scaleX = 0; scaleX < scale; scaleX++) {
+
+						check = mcp.getGrid().getSts(x, y);
+
+						if (check == 0) {
+							map.setRGB( ((x * scale) + scaleX) , ((y * scale) + scaleY), grey);
+						}
+						if (check == 1) {
+							map.setRGB(((x * scale) + scaleX),
+									((y * scale) + scaleY), white);
+						}
+						if (check == 2) {
+							map.setRGB(((x * scale) + scaleX),
+									((y * scale) + scaleY), black);
+						}
+						if (check == 3) {
+							map.setRGB(((x * scale) + scaleX),
+									((y * scale) + scaleY), green);
+						}
+					}
 				}
 			}
 		}
@@ -161,11 +174,31 @@ public class GUI1 extends JFrame {
 	}
 
 	public void setMulti() {
-		switchSoloMulti.setText("Multi");		
+		switchSoloMulti.setText("Multi");
 	}
 
 	public void setSolo() {
 		switchSoloMulti.setText("Solo");
+	}
+
+	public GUI1 linkFrame() {
+		return this;
+	}
+
+	private void updateThreadSetup() {
+		Thread updateGUI = new Thread() {
+			public void run() {
+				while (true) {
+					update();
+					try {
+						Thread.sleep(16);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		updateGUI.start();
 	}
 
 }

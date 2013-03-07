@@ -195,15 +195,15 @@ public class Debug {
                     frontL.setText(String.format("%4.2f",arr[0]));
                     frontM.setText(String.format("%4.2f",arr[1]));
                     frontR.setText(String.format("%4.2f",arr[2]));
-                    backL.setText(String.format("%4.2f",arr[9]));
-                    backM.setText(String.format("%4.2f",arr[10]));
-                    backR.setText(String.format("%4.2f",arr[11]));
                     leftF.setText(String.format("%4.2f",arr[3]));
                     leftM.setText(String.format("%4.2f",arr[4]));
                     leftB.setText(String.format("%4.2f",arr[5]));
                     rightF.setText(String.format("%4.2f",arr[6]));
                     rightM.setText(String.format("%4.2f",arr[7]));
                     rightB.setText(String.format("%4.2f",arr[8]));
+                    backL.setText(String.format("%4.2f",arr[9]));
+                    backM.setText(String.format("%4.2f",arr[10]));
+                    backR.setText(String.format("%4.2f",arr[11]));
                     
                    
                     if(bot.getGripSts() == 1){sts = "Open";}

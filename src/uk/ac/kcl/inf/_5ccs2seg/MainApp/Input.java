@@ -20,7 +20,9 @@ public class Input {
 		for (int i = 0; i < args.length; i++) {
 			String test = args[i];
 
-			if (test.equals("-multi")) {
+			if (test.equals("-gui")) {
+				mcp.setGui(true);
+			} else if (test.equals("-multi")) {
 				mcp.getArgumentOrder().add(args[i]);
 			} else if (test.equals("-explore")) {
 				mcp.getArgumentOrder().add(args[i]);

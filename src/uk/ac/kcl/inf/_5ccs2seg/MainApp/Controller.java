@@ -37,19 +37,22 @@ public class Controller implements ActionListener {
 		if (actionRequested.equals("Solo")) {
 			frame.setMulti();
 			model.setSolo(true);
-			model.randomiseMap();
+			model.getGrid().setSts(9, 11, 3);
+			for(int y = 0; y < 10; y++){
+				for(int x = 0; x < 20; x++){
+					System.out.print(model.getGrid().getSts(x, y));
+				}
+				System.out.println(" ");
+			}
 			frame.update();
 		}
 		if (actionRequested.equals("Multi")) {
 			frame.setSolo();
 			model.setSolo(false);
-			model.randomiseMap();
 			frame.update();
 		}
 		if (actionRequested.equals("Explore")) {
-			JOptionPane.showMessageDialog(frame,
-					"We haven't implemented the exploring yet :(",
-					"Sorry about that", JOptionPane.ERROR_MESSAGE);
+			model.explore();
 		}
 		if (actionRequested.equals("Collect")) {
 			JOptionPane.showMessageDialog(frame,

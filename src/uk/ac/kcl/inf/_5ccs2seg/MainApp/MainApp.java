@@ -14,6 +14,7 @@ public class MainApp {
 
 		if (mcp.getGUI()) {
 			GUI1 window = new GUI1(mcp);
+			mcp.linkFrame(window);
 			window.setVisible(true);
 		}
 		
