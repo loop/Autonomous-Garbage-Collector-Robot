@@ -81,8 +81,7 @@ public class Explore {
 
 					// for (int i = 0; i<3; i++){
 					range = cleaner1.getRange(cleaner1.LEFT_M);
-					alpha = Math.toRadians(cleaner1.getHead()
-							+ Bot.turnBy(cleaner1.getHead(), 90));
+					alpha = Math.toRadians(Bot.turnBy(cleaner1.getHead(), 90));
 					
 					System.out.print("head " + cleaner1.getHead());
 					System.out.print("head " + Bot.turnBy(cleaner1.getHead(), 90));
@@ -138,8 +137,7 @@ public class Explore {
 
 					// for (int i = 0; i<3; i++){
 					range = cleaner1.getRange(cleaner1.RIGHT_M);
-					alpha = Math.toRadians(cleaner1.getHead()
-							+ Bot.turnBy(cleaner1.getHead(), 270));
+					alpha = Math.toRadians(Bot.turnBy(cleaner1.getHead(), 270));
 					x = cleaner1.getX();
 					y = cleaner1.getY();
 					arr = calcCoord(x, y, alpha, range);
@@ -183,8 +181,7 @@ public class Explore {
 
 					// for (int i = 0; i<3; i++){
 					range = cleaner1.getRange(cleaner1.BACK_M);
-					alpha = Math.toRadians(cleaner1.getHead()
-							+ Bot.turnBy(cleaner1.getHead(), 180));
+					alpha = Math.toRadians(Bot.turnBy(cleaner1.getHead(), 180));
 					x = cleaner1.getX();
 					y = cleaner1.getY();
 					arr = calcCoord(x, y, alpha, range);
