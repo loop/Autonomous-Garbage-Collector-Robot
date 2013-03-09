@@ -113,13 +113,13 @@ public class WallFollow extends Bot {
 
 					if (dir == 0) {
 						setSpeed(0);
-						turn(90*d,0.4);
+						turn(90*d + calcTurn(0),0.4);
 						setSpeed(0.4);
 					}
 					if (dir == 1) {
 						System.out.println("Wall");
 						setSpeed(0);
-						turn(-90*d, 0.4);
+						turn(-90*d + calcTurn(0), 0.4);
 						setSpeed(0.4);
 						
 					} else {
@@ -140,7 +140,7 @@ public class WallFollow extends Bot {
 						if (r3 > (2 * r5)) {
 
 							setSpeed(SLOW);
-							pause(1400);
+							pause(1200);
 							setSpeed(0);
 
 							turn(Math.toRadians(90), 0.3);
@@ -188,7 +188,9 @@ public class WallFollow extends Bot {
 													.currentTimeMillis() - time) / 1000)) / 60)
 											+ ":"
 											+ (((System.currentTimeMillis() - time) / 1000) % 60));
+							setSpeed(0);
 							turn(calcTurn(1), 0.25);
+							setSpeed(SLOW);
 						}
 						try {
 							Thread.sleep(300);
