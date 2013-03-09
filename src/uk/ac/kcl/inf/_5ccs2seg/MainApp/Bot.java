@@ -1,8 +1,5 @@
 package uk.ac.kcl.inf._5ccs2seg.MainApp;
 
-
-
-
 import javaclient3.FiducialInterface;
 import javaclient3.GripperInterface;
 import javaclient3.PlayerClient;
@@ -40,8 +37,7 @@ public class Bot {
 	private int fidCount;
 	private double heading;
 
-	
-	 private final static int PRECISION = 250;
+	private final static int PRECISION = 250;
 
 	// constants
 	public final int OPEN = 1;
@@ -64,7 +60,7 @@ public class Bot {
 	private int count = 1;
 	private Debug deb = null;
 	private int botNo;
-	
+
 	/**
 	 * 
 	 * @param index
@@ -97,12 +93,15 @@ public class Bot {
 			public void run() {
 				while (true) {
 					while (!ranger.isDataReady()) {
-						try {Thread.sleep(25);} 
-						catch (InterruptedException e) {}
+						try {
+							Thread.sleep(25);
+						} catch (InterruptedException e) {
+						}
 					}
 					rangerReadings = ranger.getData().getRanges();
-					try {Thread.sleep(25);} 
-					catch (InterruptedException e) {
+					try {
+						Thread.sleep(25);
+					} catch (InterruptedException e) {
 					}
 				}
 			}
@@ -122,7 +121,7 @@ public class Bot {
 					x = pos2D.getX();
 					y = pos2D.getY();
 					yaw = pos2D.getYaw();
-					heading = yaw*180/Math.PI;
+					heading = yaw * 180 / Math.PI;
 					try {
 						Thread.sleep(25);
 					} catch (InterruptedException e) {
@@ -225,12 +224,11 @@ public class Bot {
 		tRate = rate;
 		updateSpeed();
 	}
-	
+
 	public synchronized void moveTo(double x, double y) {
 		PlayerPose2d pose = new PlayerPose2d(x, y, 0);
 		pos2D.setPosition(pose, new PlayerPose2d(), 1);
 	}
-
 
 	/**
 	 * Stops the robot.
@@ -253,100 +251,211 @@ public class Bot {
 			grip.open();
 		}
 	}
-	
-	
-	
-	/**@param ang the angle the robot will turn to
-     */
-    public synchronized void turnTo(double ang){
-    	double turnDirection;
-    	
-    	if (ang == 180){ang = 179.9;}
-    	else if (ang == -180){ang = -179.9;}
-    	else if (ang >= 0 && ang < 0.2){ang = 0.2;}
-    	else if (ang <= 0 && ang > -0.2){ang = -0.2;}
-    	
-    	if (Math.abs((ang - getHead())) < 0.1) {
-    		stop(); return; 
-        }
-    	
-    	double diff = ang - getHead();
-    	if (diff<0) diff = diff + 360;
-    	if (diff<180) {
-    		turnDirection = 1;
-    	} else {
-    		turnDirection = -1;
-    	}
-    	
-    	double difference = Math.abs(round(getHead()-ang));
-    	while (difference > 25) {          
-            difference = Math.abs(round(getHead()-ang));
-            //System.out.println("diff: " + difference);
-            setTRate(turnDirection*difference/(PRECISION*100));
-            pause(50);
-        }
-    	System.out.println("finish");
-    	stop();
-    }
-    
-    public synchronized static double turnBy(double head, double ang) {
-    	double res;
-    	
-    	
-    	if (ang > 0){
-    		res = head + ang;
-    		if (res > 180){res = res - 360;}	
-    	}
-    	else {
-    		res = head + ang;
-    		if (res < -180){res = res + 360;}
-    	}
-    	
-    	return res;
-    }
-    
-    private synchronized double round(double no) {
-    	return(Math.round(no*PRECISION));
+
+	/**
+	 * Method that turns the Bot left or right a number of radians
+	 * 
+	 * @author Chris Jones
+	 * @param t
+	 *            the angle of turn in rads
+	 * @param s
+	 *            the speed of turn
+	 */
+	public synchronized void turn(double t, double s) {
+
+		double sign = Math.round(t / (Math.abs(t)));
+		double turn = s * sign;
+		double time = Math.abs((t / s) * 1000);
+
+		setTRate(turn);
+
+		try {
+			Thread.sleep((int) time);
+		} catch (InterruptedException e) {
+		}
+
+		setTRate(0);
 	}
 
-    /**Will get the angle the robot needs to turn to face a location on the map straight on
-     * 
-     * @param x x-coordinate of location
-     * @param y y-coordinate of location
-     * @return the heading the robot needs to have
-     */
-    public synchronized double getAng(double x, double y, double x2, double y2){
+	/**
+	 * @param ang
+	 *            the angle the robot will turn to
+	 */
+	public synchronized void turnTo(double ang) {
+		double turnDirection;
+
+		if (ang == 180) {
+			ang = 179.9;
+		} else if (ang == -180) {
+			ang = -179.9;
+		} else if (ang >= 0 && ang < 0.2) {
+			ang = 0.2;
+		} else if (ang <= 0 && ang > -0.2) {
+			ang = -0.2;
+		}
+
+		if (Math.abs((ang - getHead())) < 0.1) {
+			stop();
+			return;
+		}
+
+		double diff = ang - getHead();
+		if (diff < 0)
+			diff = diff + 360;
+		if (diff < 180) {
+			turnDirection = 1;
+		} else {
+			turnDirection = -1;
+		}
+
+		double difference = Math.abs(round(getHead() - ang));
+		while (difference > 25) {
+			difference = Math.abs(round(getHead() - ang));
+			// System.out.println("diff: " + difference);
+			setTRate(turnDirection * difference / (PRECISION * 100));
+			pause(50);
+		}
+		System.out.println("finish");
+		stop();
+	}
+
+	public synchronized static double turnBy(double head, double ang) {
+		double res;
+
+		if (ang > 0) {
+			res = head + ang;
+			if (res > 180) {
+				res = res - 360;
+			}
+		} else {
+			res = head + ang;
+			if (res < -180) {
+				res = res + 360;
+			}
+		}
+
+		return res;
+	}
+
+	private synchronized double round(double no) {
+		return (Math.round(no * PRECISION));
+	}
+
+	/**
+	 * Will get the angle the robot needs to turn to face a location on the map
+	 * straight on
+	 * 
+	 * @param x
+	 *            x-coordinate of location
+	 * @param y
+	 *            y-coordinate of location
+	 * @return the heading the robot needs to have
+	 */
+	public synchronized double getAng(double x, double y, double x2, double y2) {
 		int sign = 1;
 		double res;
-    	
-		if (Math.abs(x - x2) < 0.1){
+
+		if (Math.abs(x - x2) < 0.1) {
 			System.out.println("Predef same x");
-			if (y < y2) {res = -90;}
-			else {res = 90;}
-		}
-		else if (Math.abs(y - y2) < 0.1) {
+			if (y < y2) {
+				res = -90;
+			} else {
+				res = 90;
+			}
+		} else if (Math.abs(y - y2) < 0.1) {
 			System.out.println("Predef same y");
-			if (x < x2) {res = 180;}
-			else {res = 0;}
-		}
-		else {
-			if (y < y2){sign = -1;}
-			else if (y > y2){sign = 1;}
-			
-    	
-			res = Math.atan(Math.abs((y - y2))/Math.abs((x-x2)));
-			res = res*180/Math.PI;
-    	
-			if (x < x2) {res = 180 - res;}
-    	
+			if (x < x2) {
+				res = 180;
+			} else {
+				res = 0;
+			}
+		} else {
+			if (y < y2) {
+				sign = -1;
+			} else if (y > y2) {
+				sign = 1;
+			}
+
+			res = Math.atan(Math.abs((y - y2)) / Math.abs((x - x2)));
+			res = res * 180 / Math.PI;
+
+			if (x < x2) {
+				res = 180 - res;
+			}
+
 			res = res * sign;
 		}
-    	System.out.println("Angle " + res);
-    	return res;
-    	
-    }
+		System.out.println("Angle " + res);
+		return res;
+
+	}
 
 	// ACCESSOR METHODS:
+
+	/**
+	 * @author Chris Jones
+	 * 
+	 *         method to calculate turn when reaching wall using the bots angle
+	 *         relative to the wall.
+	 * 
+	 * @param d
+	 *            Which wall to take measurement off ie Front/Left/Right/Back d
+	 *            = 0 is Front d = 1 is Left d = 2 is Right d = 3 is Back
+	 * @return the double
+	 */
+	public double calcTurn(int d) {
+		int a = -1;
+		int b = -1;
+		double avgX = 0.0;
+		double avgY = 0.0;
+		double x = 0.0;
+		double y = 0.0;
+		double theta = 0.0;
+		double turn = 0.0;
+
+		if (d == 0) {
+			a = 0;
+			b = 2;
+		}
+		if (d == 1) {
+			a = 5;
+			b = 3;
+		}
+		if (d == 2) {
+			a = 6;
+			b = 8;
+		}
+		if (d == 3) {
+			a = 11;
+			b = 9;
+		}
+
+		for (int i = 0; i < 10; i++) {
+
+			avgX += getRange(a);
+			avgY += getRange(b);
+
+			avgX /= 10;
+			avgY /= 10;
+		}
+
+		if ((avgX > (2 * avgY)) || (avgY > (2 * avgX))) {
+			turn = 0;
+		} else {
+			x = 0.045; // distance between front sensors double x
+			y = Math.abs(avgY - avgX);
+			theta = Math.atan(y / x);
+			turn = 0.0;
+
+			if (avgY > avgX) {
+				turn = theta;
+			} else {
+				turn = -theta;
+			}
+		}
+
+		return turn;
+	}
 
 	/**
 	 * @return the readings of all the range sensors, in meters.
@@ -366,6 +475,86 @@ public class Bot {
 	}
 
 	/**
+	 * @author Chris Jones Gets the front range.
+	 * 
+	 * @return the front range
+	 */
+	public synchronized double getFrontRange() {
+
+		double[] sonarValues = getRanges();
+
+		double lowest = sonarValues[0];
+		for (int i = 1; i <= 2; i++) {
+			if (sonarValues[i] < lowest) {
+				lowest = sonarValues[i];
+			}
+		}
+		return lowest;
+
+	}
+
+	/**
+	 * @author Chris Jones
+	 * 
+	 *         Gets the left range.
+	 * 
+	 * @return the left range
+	 */
+	public synchronized double getLeftRange() {
+
+		double[] sonarValues = getRanges();
+
+		double lowest = sonarValues[3];
+
+		if (sonarValues[5] < lowest) {
+			lowest = sonarValues[5];
+		}
+
+		return lowest;
+	}
+
+	/**
+	 * @author Chris Jones
+	 * 
+	 *         Gets the right range.
+	 * 
+	 * @return the right range
+	 */
+	public synchronized double getRightRange() {
+
+		double[] sonarValues = getRanges();
+
+		double lowest = sonarValues[6];
+
+		if (sonarValues[8] < lowest) {
+			lowest = sonarValues[8];
+		}
+
+		return lowest;
+	}
+
+	/**
+	 * @author Chris Jones
+	 * 
+	 *         Gets the back range.
+	 * 
+	 * @return the back range
+	 */
+	public synchronized double getBackRange() {
+
+		double[] sonarValues = getRanges();
+
+		double lowest = sonarValues[9];
+		for (int i = 10; i <= 11; i++) {
+			if (sonarValues[i] < lowest) {
+				lowest = sonarValues[i];
+			}
+		}
+
+		return lowest;
+	}
+
+	/**
 	 * @return x coordinate of the Bot.
 	 */
 	public synchronized double getX() {
@@ -377,8 +566,7 @@ public class Bot {
 	 */
 	public synchronized double getY() {
 		return y;
-	}	
-
+	}
 
 	/**
 	 * @return the yaw of the Bot.
@@ -386,12 +574,13 @@ public class Bot {
 	public synchronized double getYaw() {
 		return yaw;
 	}
-	
-	/**@return the yaw of the bot in degrees.
-     */
-    public synchronized double getHead() {
-        return heading;
-    }
+
+	/**
+	 * @return the yaw of the bot in degrees.
+	 */
+	public synchronized double getHead() {
+		return heading;
+	}
 
 	/**
 	 * @return if the gripper is open, closed or in transition
@@ -415,7 +604,64 @@ public class Bot {
 		return fidCount;
 	}
 
+	// ACCESSOR METHODS:
+
+	/**
+	 * @return the number of the bot
+	 */
+	public synchronized int getBot() {
+		return botNo;
+	}
+
 	// DEBUG METHODS:
+
+	/**
+	 * @author Chris Jones
+	 * 
+	 *         Gets the direction of the nearest wall.
+	 * 
+	 * @return bearing of closest wall
+	 */
+	public synchronized double getShortestDistDir() {
+
+		double[] sonarValues = getRanges();
+
+		double lowest = sonarValues[0];
+		int low = 0;
+
+		for (int i = 1; i < sonarValues.length; i++) {
+			if (sonarValues[i] < lowest) {
+				lowest = sonarValues[i];
+				low = i;
+			}
+		}
+
+		switch (low) {
+		case 0: // forward facing sensors
+		case 1:
+		case 2:
+			return 0;
+
+		case 3: // left side sensors
+		case 4:
+		case 5:
+			return 90;
+
+		case 6: // right side sensors
+		case 7:
+		case 8:
+			return -90;
+
+		case 9: // back facing sensors
+		case 10:
+		case 11:
+			return -180;
+
+		default:
+			return lowest;
+		}
+
+	}
 
 	protected synchronized double getFSpeed() {
 		return fSpeed;
@@ -425,28 +671,27 @@ public class Bot {
 		return tRate;
 	}
 
-	/**cleaner1
-	 * Displays a GUI with all the robot data, in order to help with debugging.
+	/**
+	 * cleaner1 Displays a GUI with all the robot data, in order to help with
+	 * debugging.
 	 */
 	public void debug() {
-		if( deb == null) {deb = new Debug(this, botNo);}
+		if (deb == null) {
+			deb = new Debug(this, botNo);
+		}
 	}
-	
-	public synchronized void close(){
+
+	public synchronized void close() {
 		robot.close();
 	}
-	
-	public static void main(String[] args){
-		Bot bla = new Bot(0,true);
-		
+
+	public static void main(String[] args) {
+		Bot bla = new Bot(0, true);
+
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 		}
-		
-		
-		
+
 	}
 }
-
-		
