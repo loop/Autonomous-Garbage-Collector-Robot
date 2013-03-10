@@ -59,7 +59,7 @@ public class WallFollow extends Bot {
 	/**
 	 * Find nearest wall.
 	 */
-	public void findNearestWall() {
+	public synchronized void findNearestWall() {
 		setSpeed(0);
 		turnTo(90);
 
@@ -138,17 +138,26 @@ public class WallFollow extends Bot {
 						double r5 = getRange(5);
 
 						if (r3 > (2 * r5)) {
-
-							setSpeed(SLOW);
-							pause(1200);
-							setSpeed(0);
-
-							turn(Math.toRadians(90), 0.3);
-
-							setSpeed(SLOW);
-							// pause(1500);
-
-							counter = 1;
+							
+							
+								setSpeed(0.2);
+								while(getRange(5)*2 < r3);
+								setSpeed(0);
+								turn(45*d, 0.3);
+								setSpeed(0.2);
+								pause(500);
+								setSpeed(0);
+								double x = calcTurn(1);
+								System.out.print("doorway angle "+x);
+								if( Math.abs(x*d) > 8) turn(x, 0.3);
+								else turn(40*d, 0.3);
+								
+	
+								setSpeed(SLOW);
+								// pause(1500);
+							
+	
+								counter = 1;
 						}
 
 						/*
@@ -157,23 +166,21 @@ public class WallFollow extends Bot {
 
 						if (getRange(4) < 0.9) {
 							counter = 1;
-							double tn = calcTurn(1);
 							System.out.println("prox");
 							setSpeed(-0.4);
 							pause(1000);
 							setSpeed(0);
-							turn(tn - (7 * d), 0.5);
+							turn( - (10 * d), 0.5);
 							setSpeed(SLOW);
 						}
 
 						if (getRange(7) < 0.9) {
 							counter = 1;
-							double tn = calcTurn(2);
 							System.out.println("prox");
 							setSpeed(-0.4);
 							pause(1000);
 							setSpeed(0);
-							turn(tn + (7 * d), 0.5);
+							turn((10 * d), 0.5);
 							setSpeed(SLOW);
 						}
 
