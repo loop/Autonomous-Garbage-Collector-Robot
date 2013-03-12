@@ -43,7 +43,7 @@ public class GUI1 extends JFrame {
 
 	private int maxX;
 	private int maxY;
-	private int scale = 2;
+	private int scale = 4;
 
 	public GUI1(MasterControlProgram mcp) {
 		super("Robot GUI");
@@ -53,6 +53,7 @@ public class GUI1 extends JFrame {
 
 		maxX = (mcp.getGrid().getMaxX() * scale);
 		maxY = (mcp.getGrid().getMaxY() * scale);
+		
 
 		buttonAction = new Controller(mcp, this);
 		initWidgets();
@@ -164,7 +165,7 @@ public class GUI1 extends JFrame {
 						}
 						if (check == 3) {
 							map.setRGB(((x * scale) + scaleX),
-									((y * scale) + scaleY), green);
+									((y * scale) + scaleY), red);
 						}
 					}
 				}

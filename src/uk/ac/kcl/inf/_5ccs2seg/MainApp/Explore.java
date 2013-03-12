@@ -1,5 +1,11 @@
 package uk.ac.kcl.inf._5ccs2seg.MainApp;
 
+import java.util.ArrayList;
+
+import javaclient3.structures.fiducial.PlayerFiducialItem;
+
+
+
 /**
  * Class that explore the map in solo mode
  * 
@@ -11,6 +17,7 @@ public class Explore {
 	private Bot cleaner1;
 	private Bot cleaner2;
 	private Bot cleaner3;
+	private ArrayList<double[]> garbageL = new ArrayList<double[]>();
 	private boolean done = false;
 	private int threadSleep = 16;
 
@@ -21,205 +28,139 @@ public class Explore {
 		cleaner3 = mcp.getCleaner(3);
 
 		
-		// New thread that updates the map from the sensor readings from front
-		// sensors
-		Thread updateFront = new Thread() {
+		// New thread that updates the map from the sensor readings
+		Thread updateGrid = new Thread() {
 			public void run() {
 				double range;
 				double alpha;
 				double x;
-				double y;
+				double y; 
+				double step = 0.125;
 				double[] arr;
 				int[] arr2;
+				double ang;
 				while (!getFlag()) {
-					// while (getFlag()){try {wait();} catch
-					// (InterruptedException e) {}}
-
-					// for (int i = 0; i<3; i++){
-					range = cleaner1.getRange(cleaner1.FRONT_M);
-					alpha = cleaner1.getYaw();
+					ang = 337;
+					for (int i = 0; i<9; i++){
+							
+					if (i==4){ang = 0;}
+					else if (i == 5){ang = 8;}	
+					alpha = Math.toRadians(Bot.turnBy(cleaner1.getHead(), ang));
+					range = cleaner1.getRange(i);
 					x = cleaner1.getX();
 					y = cleaner1.getY();
 					arr = calcCoord(x, y, alpha, range);
-
-					if (range < 4.97) {
-						map.setSts(arr[0], arr[1], 2);
-					} else {
-						map.setSts(arr[0], arr[1], 1);
-					}
-
-					while (range > 0.23) {
-						range = range - 0.125;
-						arr = calcCoord(x, y, alpha, range);
-						arr2 = map.coordToArrayIndexCalc(arr[0], arr[1]);
-						if (checkCell(arr2[0], arr2[1])) {
-							map.setSts(arr2[0], arr2[1], 1);
-						}
-					}
-
-					// }
-					try {
-						Thread.sleep(threadSleep);
-					} catch (InterruptedException e) {
-					}
-				}
-			}
-		};
-		updateFront.start();
-
-		// New thread that updates the map from the sensor readings from Left
-		// sensors
-		Thread updateLeft = new Thread() {
-			public void run() {
-				double range;
-				double alpha;
-				double x;
-				double y;
-				double[] arr;
-				int[] arr2;
-				while (!getFlag()) {
-
-					// for (int i = 0; i<3; i++){
-					range = cleaner1.getRange(cleaner1.LEFT_M);
-					alpha = Math.toRadians(Bot.turnBy(cleaner1.getHead(), 90));
+					//if (i==4){System.out.println(arr[0] + "---" + arr[1]); }
+					ang = ang + 5;
 					
-					System.out.print("head " + cleaner1.getHead());
-					System.out.print("head " + Bot.turnBy(cleaner1.getHead(), 90));
-					System.out.println();
+					if (range < 5) {
+						map.setSts(arr[0], arr[1], 2);
+					} 
+					while (range > 0) {
+						arr = calcCoord(x, y, alpha, range);
+						arr2 = map.coordToArrayIndexCalc(arr[0], arr[1]);
+						if (checkCell(arr2[0], arr2[1])) {
+							map.setSts(arr2[0], arr2[1], 1);
+						}
+						range = range - step;
+					}
+
+					}
+					try {
+						Thread.sleep(threadSleep);
+					} catch (InterruptedException e) {
+					}
+				}
+			}
+		};
+		updateGrid.start();
+
+		// New thread that updates the map from the sensor readings
+				Thread updateFid = new Thread() {
+					public void run() {
+						PlayerFiducialItem[] fiduc;
+						double x; double xx;
+						double y; double yy;
+						double yaw; double alpha;
+						double dist;
+						double arr[];
+						while (!getFlag()) {
+							
+							if (cleaner1.getFidCount() > 0){
+								fiduc = cleaner1.getFiducials();
+								x = cleaner1.getX();
+								y = cleaner1.getY();
+								yaw = cleaner1.getYaw();
+								
+							for (int i = 0; i < fiduc.length; i++){
+								xx = fiduc[i].getPose().getPx();
+								yy = fiduc[i].getPose().getPy();		
+								dist = Math.sqrt(Math.pow(xx,2)+Math.pow(yy,2));
+								alpha = yaw + Math.atan(yy/xx);
+								arr = calcCoord(x, y, alpha, dist);
+								arr[1] = arr[1] + 0.2;
+								
+								int cnt = 0;
+								double d;
+								int size = garbageL.size();
+								for (int j =0; j < size; j++){
+									d = Math.sqrt(Math.pow((arr[0]-garbageL.get(j)[0]),2)+
+											Math.pow((arr[1]-garbageL.get(j)[1]),2));
+									//System.out.println(d);
+									if (d<0.6){break;}
+									cnt++;
+								}
+								
+								if (cnt == size || size == 0 ){
+									garbageL.add(arr);
+									map.setSts(arr[0], arr[1], 3); 
+								}
+								//System.out.println(garbageL);
+								
+								//TEST
+								for (int j =0; j < garbageL.size(); j++){
+									double[] arrr =  garbageL.get(j);
+									System.out.println(j + ": " + "(" + arrr[0] + ", " + arrr[1] + ")");
+								}
+								System.out.println();
+							}
+							}
+							try {
+								Thread.sleep(threadSleep);
+							} catch (InterruptedException e) {
+							}
+						}
+					}
+				};
+				updateFid.start();
+		
+		
+				Thread go = new Thread() {
+					public void run() {
+						
+						while (!getFlag()) {
+		
+							
+							
+							try {
+								Thread.sleep(10000);
+							} catch (InterruptedException e) {
+							}
+							int[] arr = map.coordToArrayIndexCalc(cleaner1.getX(), cleaner1.getY());
+						Node f = new Node(arr[0],arr[1]);
+						 Node n = new NextLoc(f, map).calc();
+						 double[] arr2 = map.arrayIndexToCoordCalc(n.getArr(0), n.getArr(1));
+						 
+						 System.out.println(arr2[1] + "======" + arr2[0]);
+							}
+						}
 					
-					x = cleaner1.getX();
-					y = cleaner1.getY();
-					int[] temp = map.coordToArrayIndexCalc(x, y);
-					System.out.print("pos " + temp[0] + ' ' + temp[1] + '\n');
-					System.out.println("");
-					arr = calcCoord(x, y, alpha, range);
-
-					if (range < 4.97) {
-						map.setSts(arr[0], arr[1], 2);
-					} else {
-						map.setSts(arr[0], arr[1], 1);
-					}
-
-					while (range > 0.23) {
-						range = range - 0.125;
-						arr = calcCoord(x, y, alpha, range);
-						arr2 = map.coordToArrayIndexCalc(arr[0], arr[1]);
-
-						System.out.print("target set " + arr[0] + " - " + arr[1]);
-						System.out.println("");
-						if (checkCell(arr2[0], arr2[1])) {
-							map.setSts(arr2[0], arr2[1], 1);
-						}
-					}
-					// }
-					try {
-						Thread.sleep(threadSleep);
-					} catch (InterruptedException e) {
-					}
-				}
-			}
-		};
-		updateLeft.start();
-
-		// New thread that updates the map from the sensor readings from Right
-		// sensors
-		Thread updateRight = new Thread() {
-			public void run() {
-				double range;
-				double alpha;
-				double x;
-				double y;
-				double[] arr;
-				int[] arr2;
-				while (!getFlag()) {
-					// while (getFlag()){try {wait();} catch
-					// (InterruptedException e) {}}
-
-					// for (int i = 0; i<3; i++){
-					range = cleaner1.getRange(cleaner1.RIGHT_M);
-					alpha = Math.toRadians(Bot.turnBy(cleaner1.getHead(), 270));
-					x = cleaner1.getX();
-					y = cleaner1.getY();
-					arr = calcCoord(x, y, alpha, range);
-
-					if (range < 4.97) {
-						map.setSts(arr[0], arr[1], 2);
-					} else {
-						map.setSts(arr[0], arr[1], 1);
-					}
-
-					while (range > 0.23) {
-						range = range - 0.125;
-						arr = calcCoord(x, y, alpha, range);
-						arr2 = map.coordToArrayIndexCalc(arr[0], arr[1]);
-						if (checkCell(arr2[0], arr2[1])) {
-							map.setSts(arr2[0], arr2[1], 1);
-						}
-					}
-					// }
-					try {
-						Thread.sleep(threadSleep);
-					} catch (InterruptedException e) {
-					}
-				}
-			}
-		};
-		updateRight.start();
-
-		// New thread that updates the map from the sensor readings Back Sensors
-		Thread updateBack = new Thread() {
-			public void run() {
-				double range;
-				double alpha;
-				double x;
-				double y;
-				double[] arr;
-				int[] arr2;
-				while (!getFlag()) {
-					// while (getFlag()){try {wait();} catch
-					// (InterruptedException e) {}}
-
-					// for (int i = 0; i<3; i++){
-					range = cleaner1.getRange(cleaner1.BACK_M);
-					alpha = Math.toRadians(Bot.turnBy(cleaner1.getHead(), 180));
-					x = cleaner1.getX();
-					y = cleaner1.getY();
-					arr = calcCoord(x, y, alpha, range);
-
-					if (range < 4.97) {
-						map.setSts(arr[0], arr[1], 2);
-					} else {
-						map.setSts(arr[0], arr[1], 1);
-					}
-
-					while (range > 0.23) {
-						range = range - 0.125;
-						arr = calcCoord(x, y, alpha, range);
-						arr2 = map.coordToArrayIndexCalc(arr[0], arr[1]);
-						if (checkCell(arr2[0], arr2[1])) {
-							map.setSts(arr2[0], arr2[1], 1);
-						}
-					}
-					// }
-					try {
-						Thread.sleep(threadSleep);
-					} catch (InterruptedException e) {
-					}
-				}
-			}
-		};
-		updateBack.start();
-
-		// cleaner1.setTRate(0.5);
-		// cleaner1.moveTo(-3, 3);
-		// try {Thread.sleep(1000000);} catch (InterruptedException e) {}
-		mcp.setMap(map);
-
-		// cleaner1.close();
+					
+				};
+				//go.start();
+		
+	
 		// setFlag(true);
-
-		// System.out.println(map.imp());
-
 	}
 
 	private static double[] calcCoord(double x, double y, double alpha,
@@ -227,14 +168,13 @@ public class Explore {
 
 		x = x + (Math.cos(alpha) * range);
 		y = y + (Math.sin(alpha) * range);
-		// System.out.println(x);
-		// System.out.println(y);
-		// System.out.println();
-		// System.out.println(range);
 		return new double[] { x, y };
+		
 	}
 
 	private synchronized boolean checkCell(int i, int j) {
+	
+		
 		if (map.getSts(i, j) == 0) {
 			return true;
 		} else {
