@@ -121,8 +121,8 @@ public class GridMap {
 	 */
 	public double[] arrayIndexToCoordCalc(int x, int y) {
 		double[] indexes = new double[2];
-		double tempX = (x / cellsPerMeter) - (maxX / 2);
-		double tempY = (y / cellsPerMeter) - (maxY / 2);
+		double tempX = ((x - (maxX / 2)) / cellsPerMeter);
+		double tempY = (-(y- (maxY / 2)) / cellsPerMeter) ;
 		indexes[0] = tempX;
 		indexes[1] = tempY;
 		return indexes;
