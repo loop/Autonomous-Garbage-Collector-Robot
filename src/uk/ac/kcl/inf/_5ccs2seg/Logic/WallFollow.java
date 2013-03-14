@@ -9,9 +9,9 @@ import uk.ac.kcl.inf._5ccs2seg.Data.TargetBox;
  * @ Chris Jones The Class Follow2_3.
  */
 public class WallFollow extends Bot {
-	private final static ArrayList<TargetBox> startBox = new ArrayList<>();
+	private final static ArrayList<TargetBox> startBox = new ArrayList<TargetBox>();
 
-	private final static ArrayList<TargetBox> doorBox = new ArrayList<>();
+	private final static ArrayList<TargetBox> doorBox = new ArrayList<TargetBox>();
 
 	/** The Constant FAST. */
 	private final static double FAST = 0.4;
