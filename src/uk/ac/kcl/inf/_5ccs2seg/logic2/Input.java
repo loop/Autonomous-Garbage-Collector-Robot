@@ -1,4 +1,4 @@
-package uk.ac.kcl.inf._5ccs2seg.Logic;
+package uk.ac.kcl.inf._5ccs2seg.logic;
 
 
 public class Input {

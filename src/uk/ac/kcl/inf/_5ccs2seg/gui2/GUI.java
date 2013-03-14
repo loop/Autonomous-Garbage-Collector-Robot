@@ -1,4 +1,4 @@
-package uk.ac.kcl.inf._5ccs2seg.GUI;
+package uk.ac.kcl.inf._5ccs2seg.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -13,8 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import uk.ac.kcl.inf._5ccs2seg.Logic.Controller;
-import uk.ac.kcl.inf._5ccs2seg.Logic.MasterControlProgram;
+import uk.ac.kcl.inf._5ccs2seg.logic.Controller;
+import uk.ac.kcl.inf._5ccs2seg.logic.MasterControlProgram;
 
 public class GUI extends JFrame {
 	/**

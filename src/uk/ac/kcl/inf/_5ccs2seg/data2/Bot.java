@@ -1,6 +1,6 @@
-package uk.ac.kcl.inf._5ccs2seg.Data;
+package uk.ac.kcl.inf._5ccs2seg.data;
 
-import uk.ac.kcl.inf._5ccs2seg.GUI.Debug;
+import uk.ac.kcl.inf._5ccs2seg.gui.Debug;
 import javaclient3.FiducialInterface;
 import javaclient3.GripperInterface;
 import javaclient3.PlayerClient;
@@ -685,14 +685,5 @@ public class Bot {
 	public synchronized void close() {
 		robot.close();
 	}
-
-	public static void main(String[] args) {
-		Bot bla = new Bot(0, true);
-
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-		}
-
-	}
+	
 }

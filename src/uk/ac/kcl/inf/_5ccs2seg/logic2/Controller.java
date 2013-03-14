@@ -1,10 +1,10 @@
-package uk.ac.kcl.inf._5ccs2seg.Logic;
+package uk.ac.kcl.inf._5ccs2seg.logic;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
 
-import uk.ac.kcl.inf._5ccs2seg.GUI.GUI;
+import uk.ac.kcl.inf._5ccs2seg.gui.GUI;
 
 /**
  * 

@@ -1,8 +1,8 @@
-package uk.ac.kcl.inf._5ccs2seg.MainApp;
+package uk.ac.kcl.inf._5ccs2seg.mainapp;
 
-import uk.ac.kcl.inf._5ccs2seg.GUI.GUI;
-import uk.ac.kcl.inf._5ccs2seg.Logic.Input;
-import uk.ac.kcl.inf._5ccs2seg.Logic.MasterControlProgram;
+import uk.ac.kcl.inf._5ccs2seg.gui.GUI;
+import uk.ac.kcl.inf._5ccs2seg.logic.Input;
+import uk.ac.kcl.inf._5ccs2seg.logic.MasterControlProgram;
 
 public class MainApp {
 

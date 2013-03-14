@@ -1,10 +1,10 @@
-package uk.ac.kcl.inf._5ccs2seg.Logic;
+package uk.ac.kcl.inf._5ccs2seg.logic;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import uk.ac.kcl.inf._5ccs2seg.Data.GridMap;
-import uk.ac.kcl.inf._5ccs2seg.GUI.GUI;
+import uk.ac.kcl.inf._5ccs2seg.data.GridMap;
+import uk.ac.kcl.inf._5ccs2seg.gui.GUI;
 
 public class MasterControlProgram {
 

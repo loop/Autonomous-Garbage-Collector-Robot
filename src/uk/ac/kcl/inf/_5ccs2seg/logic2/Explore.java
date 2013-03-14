@@ -1,10 +1,10 @@
-package uk.ac.kcl.inf._5ccs2seg.Logic;
+package uk.ac.kcl.inf._5ccs2seg.logic;
 
 import java.util.ArrayList;
 
-import uk.ac.kcl.inf._5ccs2seg.Data.Bot;
-import uk.ac.kcl.inf._5ccs2seg.Data.GridMap;
-import uk.ac.kcl.inf._5ccs2seg.Data.Node;
+import uk.ac.kcl.inf._5ccs2seg.data.Bot;
+import uk.ac.kcl.inf._5ccs2seg.data.GridMap;
+import uk.ac.kcl.inf._5ccs2seg.data.Node;
 
 import javaclient3.structures.fiducial.PlayerFiducialItem;
 
