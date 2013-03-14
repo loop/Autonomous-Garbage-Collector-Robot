@@ -1,4 +1,4 @@
-package uk.ac.kcl.inf._5ccs2seg.MainApp;
+package uk.ac.kcl.inf._5ccs2seg.GUI;
 import java.awt.GridLayout;
 
 import javaclient3.structures.fiducial.PlayerFiducialItem;
@@ -6,6 +6,8 @@ import javaclient3.structures.fiducial.PlayerFiducialItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import uk.ac.kcl.inf._5ccs2seg.Data.Bot;
 
 /**Creates a top-level window with all the sensor data about a Bot 
  * 

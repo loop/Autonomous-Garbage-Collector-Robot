@@ -1,4 +1,4 @@
-package uk.ac.kcl.inf._5ccs2seg.MainApp;
+package uk.ac.kcl.inf._5ccs2seg.Data;
 
 /**
  * @author Chris Jones

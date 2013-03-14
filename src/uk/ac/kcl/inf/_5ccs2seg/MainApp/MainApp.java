@@ -1,5 +1,9 @@
 package uk.ac.kcl.inf._5ccs2seg.MainApp;
 
+import uk.ac.kcl.inf._5ccs2seg.GUI.GUI;
+import uk.ac.kcl.inf._5ccs2seg.Logic.Input;
+import uk.ac.kcl.inf._5ccs2seg.Logic.MasterControlProgram;
+
 public class MainApp {
 
 	/**
@@ -13,7 +17,7 @@ public class MainApp {
 		Input.ValidateInput(args, mcp);
 
 		if (mcp.getGUI()) {
-			GUI1 window = new GUI1(mcp);
+			GUI window = new GUI(mcp);
 			mcp.linkFrame(window);
 			window.setVisible(true);
 		}

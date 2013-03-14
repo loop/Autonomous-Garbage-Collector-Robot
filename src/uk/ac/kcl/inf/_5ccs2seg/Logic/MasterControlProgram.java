@@ -1,12 +1,15 @@
-package uk.ac.kcl.inf._5ccs2seg.MainApp;
+package uk.ac.kcl.inf._5ccs2seg.Logic;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import uk.ac.kcl.inf._5ccs2seg.Data.GridMap;
+import uk.ac.kcl.inf._5ccs2seg.GUI.GUI;
+
 public class MasterControlProgram {
 
 	private boolean gui = false;
-	private GUI1 frame;
+	private GUI frame;
 	private boolean solo = true;
 	private boolean mapped = false;
 	private int numberOfMaps = 0;
@@ -134,7 +137,7 @@ public class MasterControlProgram {
 		}
 	}
 
-	public void linkFrame(GUI1 frame) {
+	public void linkFrame(GUI frame) {
 		this.frame = frame;
 	}
 

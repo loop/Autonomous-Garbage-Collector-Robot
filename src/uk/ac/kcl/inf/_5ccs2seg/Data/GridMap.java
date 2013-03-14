@@ -1,4 +1,4 @@
-package uk.ac.kcl.inf._5ccs2seg.MainApp;
+package uk.ac.kcl.inf._5ccs2seg.Data;
 
 /**
  * The grid representation of the map stored in a 2D array (0 - Unexplored; 1 -

@@ -1,4 +1,4 @@
-package uk.ac.kcl.inf._5ccs2seg.MainApp;
+package uk.ac.kcl.inf._5ccs2seg.GUI;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -13,7 +13,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-public class GUI1 extends JFrame {
+import uk.ac.kcl.inf._5ccs2seg.Logic.Controller;
+import uk.ac.kcl.inf._5ccs2seg.Logic.MasterControlProgram;
+
+public class GUI extends JFrame {
 	/**
 	 * 
 	 */
@@ -45,7 +48,7 @@ public class GUI1 extends JFrame {
 	private int maxY;
 	private int scale = 4;
 
-	public GUI1(MasterControlProgram mcp) {
+	public GUI(MasterControlProgram mcp) {
 		super("Robot GUI");
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
@@ -182,7 +185,7 @@ public class GUI1 extends JFrame {
 		switchSoloMulti.setText("Solo");
 	}
 
-	public GUI1 linkFrame() {
+	public GUI linkFrame() {
 		return this;
 	}
 

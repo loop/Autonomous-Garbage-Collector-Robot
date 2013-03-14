@@ -1,8 +1,10 @@
-package uk.ac.kcl.inf._5ccs2seg.MainApp;
+package uk.ac.kcl.inf._5ccs2seg.Logic;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
+
+import uk.ac.kcl.inf._5ccs2seg.GUI.GUI;
 
 /**
  * 
@@ -12,11 +14,11 @@ import javax.swing.JOptionPane;
 public class Controller implements ActionListener {
 
 	MasterControlProgram model;
-	GUI1 frame;
+	GUI frame;
 
-	public Controller(MasterControlProgram model, GUI1 frame) {
+	public Controller(MasterControlProgram model, GUI frame) {
 		this.model = (MasterControlProgram) model;
-		this.frame = (GUI1) frame;
+		this.frame = (GUI) frame;
 
 	}
 

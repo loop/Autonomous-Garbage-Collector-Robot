@@ -1,5 +1,6 @@
-package uk.ac.kcl.inf._5ccs2seg.MainApp;
+package uk.ac.kcl.inf._5ccs2seg.Data;
 
+import uk.ac.kcl.inf._5ccs2seg.GUI.Debug;
 import javaclient3.FiducialInterface;
 import javaclient3.GripperInterface;
 import javaclient3.PlayerClient;
@@ -663,11 +664,11 @@ public class Bot {
 
 	}
 
-	protected synchronized double getFSpeed() {
+	public synchronized double getFSpeed() {
 		return fSpeed;
 	}
 
-	protected synchronized double getTRate() {
+	public synchronized double getTRate() {
 		return tRate;
 	}
 

@@ -1,6 +1,9 @@
-package uk.ac.kcl.inf._5ccs2seg.MainApp;
+package uk.ac.kcl.inf._5ccs2seg.Logic;
 
 import java.util.ArrayList;
+
+import uk.ac.kcl.inf._5ccs2seg.Data.Bot;
+import uk.ac.kcl.inf._5ccs2seg.Data.TargetBox;
 
 /**
  * @ Chris Jones The Class Follow2_3.
