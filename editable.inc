@@ -16,9 +16,14 @@ define robot_ranger ranger
    exploresensor ( pose [ 0.009  0.003 0.1   8] )
    exploresensor ( pose [ 0.006  0.006 0.1  13] )
    exploresensor ( pose [ 0.003  0.009 0.1  18] )
-   exploresensor ( pose [ 0.000  0.012 0.1  23] ) 
-   
+   exploresensor ( pose [ 0.000  0.012 0.1  23] )
+   exploresensor ( pose [ 0.125  0.125 0.1   0] )
+   exploresensor ( pose [ 0.125 -0.125 0.1   0] )
+   exploresensor ( pose [ 0.225  0.125 0.1  90] )
+   exploresensor ( pose [-0.225  0.125 0.1  90] )
+   exploresensor ( pose [ 0.225 -0.125 0.1 270] )
+   exploresensor ( pose [-0.225 -0.125 0.1 270] )
    exploresensor ( pose [-0.125  0.000 0.1 180] )
-   exploresensor ( pose [ 0.000  0.125 0.1  90] )
-   exploresensor ( pose [ 0.000 -0.125 0.1 270] )
 )
+   
+   
