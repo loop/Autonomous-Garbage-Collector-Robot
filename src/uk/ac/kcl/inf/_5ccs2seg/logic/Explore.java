@@ -19,17 +19,14 @@ import javaclient3.structures.fiducial.PlayerFiducialItem;
 public class Explore {
 	private GridMap map;
 	private Bot cleaner1;
-	private Bot cleaner2;
-	private Bot cleaner3;
+	
 	private ArrayList<double[]> garbageL = new ArrayList<double[]>();
 	private boolean done = false;
 	private int threadSleep = 16;
 
-	public Explore(MasterControlProgram mcp) {
+	public Explore(MasterControlProgram mcp, Bot cleaner) {
 		map = mcp.getGrid();
-		cleaner1 = mcp.getCleaner(1);
-		cleaner2 = mcp.getCleaner(2);
-		cleaner3 = mcp.getCleaner(3);
+		cleaner1 = mcp.getCleaner(1);		
 
 		
 		// New thread that updates the map from the sensor readings

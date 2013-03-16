@@ -1,5 +1,7 @@
 package uk.ac.kcl.inf._5ccs2seg.data;
 
+import java.util.ArrayList;
+
 import uk.ac.kcl.inf._5ccs2seg.gui.Debug;
 import javaclient3.FiducialInterface;
 import javaclient3.GripperInterface;
@@ -37,6 +39,8 @@ public class Bot {
 	private PlayerFiducialItem[] fidData;
 	private int fidCount;
 	private double heading;
+	private final static ArrayList<TargetBox> startBox = new ArrayList<TargetBox>();
+	private final static ArrayList<TargetBox> doorBox = new ArrayList<TargetBox>();
 
 	private final static int PRECISION = 250;
 
@@ -404,7 +408,7 @@ public class Bot {
 	 *            = 0 is Front d = 1 is Left d = 2 is Right d = 3 is Back
 	 * @return the double
 	 */
-	public double calcTurn(int d) {
+	public synchronized double calcTurn(int d) {
 		int a = -1;
 		int b = -1;
 		double avgX = 0.0;
@@ -415,22 +419,18 @@ public class Bot {
 		double turn = 0.0;
 
 		if (d == 0) {
-			a = 0;
-			b = 2;
+			a = 9;
+			b = 10;
 		}
 		if (d == 1) {
-			a = 5;
-			b = 3;
+			a = 11;
+			b = 12;
 		}
 		if (d == 2) {
-			a = 6;
-			b = 8;
+			a = 13;
+			b = 14;
 		}
-		if (d == 3) {
-			a = 11;
-			b = 9;
-		}
-
+		
 		for (int i = 0; i < 10; i++) {
 
 			avgX += getRange(a);
@@ -443,12 +443,20 @@ public class Bot {
 		if ((avgX > (2 * avgY)) || (avgY > (2 * avgX))) {
 			turn = 0;
 		} else {
-			x = 0.045; // distance between front sensors double x
+			if (d == 0)
+			{ 
+				x = 0.025;
+			}
+			else
+			{
+				x = 0.045; // distance between front sensors double x
+			}
+			
 			y = Math.abs(avgY - avgX);
 			theta = Math.atan(y / x);
 			turn = 0.0;
 
-			if (avgY > avgX) {
+			if (avgX > avgY) {
 				turn = theta;
 			} else {
 				turn = -theta;
@@ -484,12 +492,12 @@ public class Bot {
 
 		double[] sonarValues = getRanges();
 
-		double lowest = sonarValues[0];
-		for (int i = 1; i <= 2; i++) {
-			if (sonarValues[i] < lowest) {
-				lowest = sonarValues[i];
-			}
+		double lowest = sonarValues[9];
+		
+		if (sonarValues[10] < lowest) {
+			lowest = sonarValues[10];
 		}
+		
 		return lowest;
 
 	}
@@ -505,10 +513,10 @@ public class Bot {
 
 		double[] sonarValues = getRanges();
 
-		double lowest = sonarValues[3];
+		double lowest = sonarValues[11];
 
-		if (sonarValues[5] < lowest) {
-			lowest = sonarValues[5];
+		if (sonarValues[12] < lowest) {
+			lowest = sonarValues[12];
 		}
 
 		return lowest;
@@ -525,10 +533,10 @@ public class Bot {
 
 		double[] sonarValues = getRanges();
 
-		double lowest = sonarValues[6];
+		double lowest = sonarValues[13];
 
-		if (sonarValues[8] < lowest) {
-			lowest = sonarValues[8];
+		if (sonarValues[14] < lowest) {
+			lowest = sonarValues[14];
 		}
 
 		return lowest;
@@ -545,13 +553,8 @@ public class Bot {
 
 		double[] sonarValues = getRanges();
 
-		double lowest = sonarValues[9];
-		for (int i = 10; i <= 11; i++) {
-			if (sonarValues[i] < lowest) {
-				lowest = sonarValues[i];
-			}
-		}
-
+		double lowest = sonarValues[15];
+		
 		return lowest;
 	}
 
@@ -630,7 +633,7 @@ public class Bot {
 		double lowest = sonarValues[0];
 		int low = 0;
 
-		for (int i = 1; i < sonarValues.length; i++) {
+		for (int i = 9; i < sonarValues.length; i++) {
 			if (sonarValues[i] < lowest) {
 				lowest = sonarValues[i];
 				low = i;
@@ -638,24 +641,23 @@ public class Bot {
 		}
 
 		switch (low) {
-		case 0: // forward facing sensors
-		case 1:
-		case 2:
+		case 9: // forward facing sensors
+		case 10:
+		
 			return 0;
 
-		case 3: // left side sensors
-		case 4:
-		case 5:
+		case 11: // left side sensors
+		case 12:
+		
 			return 90;
 
-		case 6: // right side sensors
-		case 7:
-		case 8:
+		case 13: // right side sensors
+		case 14:
+		
 			return -90;
 
-		case 9: // back facing sensors
-		case 10:
-		case 11:
+		case 15: // back facing sensors
+		
 			return -180;
 
 		default:
@@ -670,6 +672,16 @@ public class Bot {
 
 	public synchronized double getTRate() {
 		return tRate;
+	}
+	
+	public ArrayList<TargetBox> getStart()
+	{
+		return startBox;
+	}
+	
+	public void addStart(TargetBox t)
+	{
+		startBox.add(t);
 	}
 
 	/**

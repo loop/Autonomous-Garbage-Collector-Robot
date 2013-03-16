@@ -3,6 +3,7 @@ package uk.ac.kcl.inf._5ccs2seg.logic;
 import java.util.LinkedList;
 import java.util.List;
 
+import uk.ac.kcl.inf._5ccs2seg.data.Bot;
 import uk.ac.kcl.inf._5ccs2seg.data.GridMap;
 import uk.ac.kcl.inf._5ccs2seg.gui.GUI;
 
@@ -10,7 +11,7 @@ public class MasterControlProgram {
 
 	private boolean gui = false;
 	private GUI frame;
-	private boolean solo = true;
+	private static boolean solo = true;
 	private boolean mapped = false;
 	private int numberOfMaps = 0;
 	private List<String> argumentOrder = new LinkedList<String>();
@@ -18,21 +19,20 @@ public class MasterControlProgram {
 
 	private GridMap mapRepresentation = new GridMap();
 
-	private WallFollow cleaner1;
-	private WallFollow cleaner2;
-	private WallFollow cleaner3;
+	private Bot cleaner1;
+	private Bot cleaner2;
+	private Bot cleaner3;
 
 	private int maxSizeOfX = mapRepresentation.getMaxX();
 	private int maxSizeOfY = mapRepresentation.getMaxY();
 
 	public MasterControlProgram() {
-
-		cleaner1 = new WallFollow(0, true);
+		
 
 	}
 
-	public void setSolo(boolean solo) {
-		this.solo = solo;
+	public static void setSolo(boolean s) {
+		solo = s;
 	}
 
 	public void setGui(boolean gui) {
@@ -57,7 +57,7 @@ public class MasterControlProgram {
 		this.mapOutputNames = mapOutputNames;
 	}
 
-	public void setCleaner(int bot, WallFollow cleaner) {
+	public void setCleaner(int bot, Bot cleaner) {
 		if (bot == 1) {
 			this.cleaner1 = cleaner;
 		}
@@ -69,7 +69,7 @@ public class MasterControlProgram {
 		}
 	}
 
-	public WallFollow getCleaner(int bot) {
+	public Bot getCleaner(int bot) {
 		if (bot == 1) {
 			return cleaner1;
 		}
@@ -79,7 +79,7 @@ public class MasterControlProgram {
 		return cleaner3;
 	}
 
-	public boolean getSolo() {
+	public static boolean getSolo() {
 		return solo;
 	}
 
@@ -125,14 +125,29 @@ public class MasterControlProgram {
 	 */
 	public void explore() {
 		if (!solo) {
-			new Explore(this);
+			System.out.println(getSolo());
+			cleaner1 = new Bot(0, false);
+			new WallFollow(cleaner1);
+			new Explore(this, cleaner1);
+			
+			cleaner2 = new Bot(1, false);
+			new WallFollow(cleaner2);
+			new Explore(this, cleaner2);			
+			
+			cleaner3 = new Bot(2, false);
+			new WallFollow(cleaner3);
+			new Explore(this, cleaner3);
 			System.out
 					.println("Exploring mappig envi(muti) and probably returning data structure");
 			mapped = true;
 		} else {
-			new Explore(this);
+			cleaner1 = new Bot(0, false);
+			new WallFollow(cleaner1);			
+			new Explore(this, cleaner1);
+			
 			System.out
 					.println("Exploring mappig envi(solo) and probably returning data structure");
+				
 			mapped = true;
 		}
 	}

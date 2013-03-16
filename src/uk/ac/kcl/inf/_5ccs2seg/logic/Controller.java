@@ -38,7 +38,7 @@ public class Controller implements ActionListener {
 		}
 		if (actionRequested.equals("Solo")) {
 			frame.setMulti();
-			model.setSolo(true);
+			MasterControlProgram.setSolo(false);
 			model.getGrid().setSts(9, 11, 3);
 			for(int y = 0; y < 10; y++){
 				for(int x = 0; x < 20; x++){
@@ -50,7 +50,7 @@ public class Controller implements ActionListener {
 		}
 		if (actionRequested.equals("Multi")) {
 			frame.setSolo();
-			model.setSolo(false);
+			MasterControlProgram.setSolo(true);
 			frame.update();
 		}
 		if (actionRequested.equals("Explore")) {

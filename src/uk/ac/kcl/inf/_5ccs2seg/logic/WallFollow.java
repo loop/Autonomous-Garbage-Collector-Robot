@@ -5,18 +5,17 @@ import java.util.ArrayList;
 import uk.ac.kcl.inf._5ccs2seg.data.Bot;
 import uk.ac.kcl.inf._5ccs2seg.data.TargetBox;
 
-/**
- * @ Chris Jones The Class Follow2_3.
- */
-public class WallFollow extends Bot {
-	private final static ArrayList<TargetBox> startBox = new ArrayList<TargetBox>();
-
-	private final static ArrayList<TargetBox> doorBox = new ArrayList<TargetBox>();
+public class WallFollow {
+	
 
 	/** The Constant FAST. */
 	private final static double FAST = 0.4;
 
 	protected boolean STOP = false;
+	
+	protected boolean prevIn;
+	
+	protected boolean in;
 
 	/** The Constant SLOW. */
 	private final double SLOW = 0.4;
@@ -29,15 +28,8 @@ public class WallFollow extends Bot {
 
 	/** The counter. */
 	private int counter = 1;
-
-	/** The Constant time. */
-	private final long time = System.currentTimeMillis();
-
-	private int botIndex = -1;
-
-	private final double[] doorCheck = new double[20];
-
-	private final int c = 0;
+			
+	private Bot cleaner_1;
 
 	/**
 	 * Instantiates a new follow2_3.
@@ -47,49 +39,14 @@ public class WallFollow extends Bot {
 	 * @param debug
 	 *            the debug
 	 */
-	public WallFollow(int index, boolean debug) {
-		super(index, debug);
-
-		botIndex = index;
+	public WallFollow(Bot cleaner) {
+		
+		cleaner_1 = cleaner;
 		findNearestWall();
 		wallFollowThread(1);
 		targetThread();
-
-		// avoidanceThread();
-		// alignThread();
-	}
-
-	/**
-	 * Find nearest wall.
-	 */
-	public synchronized void findNearestWall() {
-		setSpeed(0);
-		turnTo(90);
-
-		double q = getShortestDistDir();
-
-		if ((q + getHead()) > 180) {
-			turnTo(179.8);
-		} else {
-			turnTo(getHead() + q);
-		}
-
-		while (getFrontRange() > 0.9) {
-			setSpeed(FAST);
-			pause(20);
-
-		}
-		setSpeed(0);
-
-		TargetBox start = new TargetBox(this.getBot(), getX(), getY(),
-				getHead(), getDir(), 2.0, "start");
-		startBox.add(start);
-
-		System.out.println("Y top = " + start.getTop() + " Y bottom = "
-				+ start.getBottom() + "\n X left = " + start.getLeft()
-				+ " X Right = " + start.getRight());
-
-		startBox.add(start);
+		targetOwnThread();
+		
 	}
 
 	public int getDir() {
@@ -97,7 +54,42 @@ public class WallFollow extends Bot {
 	}
 
 	public int getIndex() {
-		return botIndex;
+		return cleaner_1.getBot();
+	}
+		
+
+	/**
+	 * Find nearest wall.
+	 */
+	public synchronized void findNearestWall() {
+		cleaner_1.setSpeed(0);
+		cleaner_1.turnTo(90);
+	
+		double q = cleaner_1.getShortestDistDir();
+	
+		if ((q + cleaner_1.getHead()) > 180) {
+			cleaner_1.turnTo(179.8);
+		} else {
+			cleaner_1.turnTo(cleaner_1.getHead() + q);
+		}
+	
+		while (cleaner_1.getFrontRange() > 0.9) {
+			cleaner_1.setSpeed(FAST);
+			cleaner_1.pause(20);
+	
+		}
+		cleaner_1.setSpeed(0);
+	
+		TargetBox start = new TargetBox(cleaner_1.getBot(), cleaner_1.getX(), cleaner_1.getY(),
+				cleaner_1.getHead(), getDir(), 2.0, "start");
+		cleaner_1.addStart(start);
+		in = true;
+		prevIn = true;
+	
+		System.out.println("Y top = " + start.getTop() + " Y bottom = "
+				+ start.getBottom() + "\n X left = " + start.getLeft()
+				+ " X Right = " + start.getRight());	
+		
 	}
 
 	/**
@@ -112,51 +104,83 @@ public class WallFollow extends Bot {
 		final Thread wallFollow = new Thread() {
 			@Override
 			public void run() {
-				while (!STOP) {
+				while (!STOP) 
+				{
 
 					if (dir == 0) {
-						setSpeed(0);
-						turn(90*d + calcTurn(0),0.4);
-						setSpeed(0.4);
+						cleaner_1.setSpeed(0);
+						cleaner_1.setTRate(0.2);
+						try {
+							Thread.sleep((long)(((90*d+ cleaner_1.calcTurn(0))/0.2)*1000));
+						} catch (InterruptedException e) {
+							
+						}
+						cleaner_1.setTRate(0);
+						// turn(90*d + calcTurn(0),0.4);
+						cleaner_1.setSpeed(0.4);
 					}
-					if (dir == 1) {
-						System.out.println("Wall");
-						setSpeed(0);
-						turn(-90*d + calcTurn(0), 0.4);
-						setSpeed(0.4);
+					if (dir == 1) {						
+						cleaner_1.setSpeed(0);
+						cleaner_1.setTRate(-0.3);
+						try {
+							Thread.sleep((long)(((180*d + cleaner_1.calcTurn(0))/0.3)*1000));
+						} catch (InterruptedException e) {
+							
+						}
+						cleaner_1.setTRate(0);
+						cleaner_1.setTRate(0.5);						
+						cleaner_1.pause((long)(((90*d)/0.5)*1000));						
+							
+						
+						cleaner_1.setTRate(0);
+						
+						cleaner_1.setSpeed(0.4);
 						
 					} else {
 						System.err.println("Invalid direction!");
 						System.exit(1);
 					}
 
-					while (getFrontRange() > 0.9) {
-						setSpeed(SLOW);
+					while (cleaner_1.getFrontRange() > 0.9) {
+						
+						
+							cleaner_1.setSpeed(SLOW);
+						
 
 						/*
 						 * Doorway algorithm
 						 */
 
-						double r3 = getRange(3);
-						double r5 = getRange(5);
+						double r11 = cleaner_1.getRange(11);
+						double r12 = cleaner_1.getRange(12);
 
-						if (r3 > (2 * r5)) {
+						if (r11 > (2 * r12)) {
 							
 							
-								setSpeed(0.2);
-								while(getRange(5)*2 < r3);
-								setSpeed(0);
-								turn(45*d, 0.3);
-								setSpeed(0.2);
-								pause(500);
-								setSpeed(0);
-								double x = calcTurn(1);
-								System.out.print("doorway angle "+x);
-								if( Math.abs(x*d) > 8) turn(x, 0.3);
-								else turn(40*d, 0.3);
-								
+							cleaner_1.setSpeed(0.2);
+								while(cleaner_1.getRange(12)*2 < r11);
+								cleaner_1.setSpeed(0);
+								cleaner_1.setTRate(0.2);
+								try {
+									Thread.sleep((long)((45*d/0.2)*1000));
+								} catch (InterruptedException e) {
+									
+								}
+								cleaner_1.setTRate(0);
+								// turn(45*d, 0.3);
+								cleaner_1.setSpeed(0.2);
+								cleaner_1.pause(500);
+								cleaner_1.setSpeed(0);
+								cleaner_1.setTRate(0.3);
+								try {
+									Thread.sleep((long)((40*d/0.3)*1000));
+								} catch (InterruptedException e) {
+									
+								}
+								cleaner_1.setTRate(0);
+								// turn(40*d, 0.3);						
 	
-								setSpeed(SLOW);
+								cleaner_1.setSpeed(SLOW);
 								// pause(1500);
 							
 	
@@ -167,24 +191,40 @@ public class WallFollow extends Bot {
 						 * Proximity algorithm
 						 */
 
-						if (getRange(4) < 0.9) {
+						if (cleaner_1.getRange(6) < 0.94) {
 							counter = 1;
 							System.out.println("prox");
-							setSpeed(-0.4);
-							pause(1000);
-							setSpeed(0);
-							turn( - (10 * d), 0.5);
-							setSpeed(SLOW);
+							cleaner_1.setSpeed(-0.4);
+							cleaner_1.pause(1000);
+							cleaner_1.setSpeed(0);
+							cleaner_1.setTRate(-0.5);
+							try {
+								Thread.sleep((long)((10*d/0.5)*1000));
+							} catch (InterruptedException e) {
+								
+							}
+							cleaner_1.setTRate(0);
+							//turn( - (10 * d), 0.5);
+							cleaner_1.setSpeed(SLOW);
 						}
+						
+						
 
-						if (getRange(7) < 0.9) {
+						if (cleaner_1.getRange(2) < 0.94) {
 							counter = 1;
 							System.out.println("prox");
-							setSpeed(-0.4);
-							pause(1000);
-							setSpeed(0);
-							turn((10 * d), 0.5);
-							setSpeed(SLOW);
+							cleaner_1.setSpeed(-0.4);
+							cleaner_1.pause(1000);
+							cleaner_1.setSpeed(0);
+							cleaner_1.setTRate(0.5);
+							try {
+								Thread.sleep((long)((10*d/0.5)*1000));
+							} catch (InterruptedException e) {
+								
+							}
+							cleaner_1.setTRate(0);
+							//turn((10 * d), 0.5);
+							cleaner_1.setSpeed(SLOW);
 						}
 
 						/*
@@ -192,15 +232,10 @@ public class WallFollow extends Bot {
 						 */
 
 						if ((counter % 15) == 0) {
-							System.out
-									.println("correction "
-											+ ((int) (((System
-													.currentTimeMillis() - time) / 1000)) / 60)
-											+ ":"
-											+ (((System.currentTimeMillis() - time) / 1000) % 60));
-							setSpeed(0);
-							turn(calcTurn(1), 0.25);
-							setSpeed(SLOW);
+							
+							cleaner_1.setSpeed(0);
+							cleaner_1.turn(cleaner_1.calcTurn(1), 0.25);
+							cleaner_1.setSpeed(SLOW);
 						}
 						try {
 							Thread.sleep(300);
@@ -218,12 +253,8 @@ public class WallFollow extends Bot {
 					}
 
 				}
-				setSpeed(0);
-				for (int count = 0; count < doorBox.size(); count++) {
-					System.out.println(doorBox.get(count).getCounter() + "  "
-							+ doorBox.get(count).getInitialX() + "  "
-							+ doorBox.get(count).getInitialY());
-				}
+				cleaner_1.setSpeed(0);
+				
 
 			}
 		};
@@ -237,14 +268,17 @@ public class WallFollow extends Bot {
 		Thread target = new Thread() {
 			@Override
 			public void run() {
-				while (!STOP) {
-					for (int count = 0; count < startBox.size(); count++) {
-						if ((startBox.get(count).getIndex() != getIndex())
-								&& startBox.get(count).checkTarget(getX(),
-										getY())) {
+				while (!STOP) {					
+					
+					for (int count = 0; count < cleaner_1.getStart().size(); count++) {						
+						
+						if ((cleaner_1.getStart().get(count).getIndex() != getIndex())
+								&& cleaner_1.getStart().get(count).checkTarget(cleaner_1.getX(),
+										cleaner_1.getY())) {
 							STOP = true;
+							
 						}
-
+						
 					}
 					try {
 						Thread.sleep(100);
@@ -256,4 +290,44 @@ public class WallFollow extends Bot {
 		};
 		target.start();
 	}
+	
+	
+	protected synchronized void targetOwnThread() {
+		Thread targetOwn = new Thread() {
+			@Override
+			public void run() {
+				boolean counter = false;
+				while (!STOP) {
+					if (!counter)
+					{
+						try {
+							Thread.sleep(90000);
+						} catch (InterruptedException e) {
+						}
+						System.out.println(cleaner_1.getBot()+" OwnBox go");
+						counter = true;
+					}
+					for (int count = 0; count < cleaner_1.getStart().size(); count++) {						
+						
+						if (cleaner_1.getStart().get(count).checkTarget(cleaner_1.getX(),
+										cleaner_1.getY())) {
+							STOP = true;
+							
+							
+						}
+						
+					}
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+					}
+
+				}
+			}
+		};
+		targetOwn.start();
+	}
+	
+	// CONTROL METHODS
+
 }
