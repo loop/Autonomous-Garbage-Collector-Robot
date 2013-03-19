@@ -1,7 +1,13 @@
 package uk.ac.kcl.inf._5ccs2seg.logic;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
 
 import uk.ac.kcl.inf._5ccs2seg.data.Bot;
 import uk.ac.kcl.inf._5ccs2seg.data.GridMap;
@@ -19,6 +25,9 @@ public class MasterControlProgram {
 
 	private GridMap mapRepresentation = new GridMap();
 
+	private double[] targetCollectionPoint = { 0.0, 0.0 };
+	private double targetCollectionSize = 0;
+
 	private Bot cleaner1;
 	private Bot cleaner2;
 	private Bot cleaner3;
@@ -27,7 +36,6 @@ public class MasterControlProgram {
 	private int maxSizeOfY = mapRepresentation.getMaxY();
 
 	public MasterControlProgram() {
-		
 
 	}
 
@@ -95,7 +103,7 @@ public class MasterControlProgram {
 		return mapRepresentation;
 	}
 
-	public void addMapname(String fileName) {
+	public void addMapOutput(String fileName) {
 		numberOfMaps++;
 		mapOutputNames.add(fileName);
 	}
@@ -129,11 +137,11 @@ public class MasterControlProgram {
 			cleaner1 = new Bot(0, false);
 			new WallFollow(cleaner1);
 			new Explore(this, cleaner1);
-			
+
 			cleaner2 = new Bot(1, false);
 			new WallFollow(cleaner2);
-			new Explore(this, cleaner2);			
-			
+			new Explore(this, cleaner2);
+
 			cleaner3 = new Bot(2, false);
 			new WallFollow(cleaner3);
 			new Explore(this, cleaner3);
@@ -142,12 +150,12 @@ public class MasterControlProgram {
 			mapped = true;
 		} else {
 			cleaner1 = new Bot(0, false);
-			new WallFollow(cleaner1);			
+			new WallFollow(cleaner1);
 			new Explore(this, cleaner1);
-			
+
 			System.out
 					.println("Exploring mappig envi(solo) and probably returning data structure");
-				
+
 			mapped = true;
 		}
 	}
@@ -156,8 +164,63 @@ public class MasterControlProgram {
 		this.frame = frame;
 	}
 
-	public void updateFrame() {
-		frame.update();
+	public void saveMap() {
+
+		if (!mapOutputNames.isEmpty()) {
+			String name = mapOutputNames.get(0);
+			File saveFile = new File(name + ".png");
+
+			if (!gui) {
+				BufferedImage backup = new BufferedImage(maxSizeOfX,
+						maxSizeOfY, BufferedImage.TYPE_INT_RGB);
+				int red = 0xFF0000;
+				int green = 0x00FF00;
+				int blue = 0x0000FF;
+				int black = 0x000000;
+				int grey = 0x888888;
+				int white = 0xFFFFFF;
+
+				int scale = 2;
+				int check = 0;
+				for (int y = 0; y < (maxSizeOfY / scale); y++) {
+					for (int x = 0; x < (maxSizeOfX / scale); x++) {
+						for (int scaleY = 0; scaleY < scale; scaleY++) {
+							for (int scaleX = 0; scaleX < scale; scaleX++) {
+
+								check = getGrid().getSts(x, y);
+
+								if (check == 0) {
+									backup.setRGB(((x * scale) + scaleX),
+											((y * scale) + scaleY), grey);
+								}
+								if (check == 1) {
+									backup.setRGB(((x * scale) + scaleX),
+											((y * scale) + scaleY), white);
+								}
+								if (check == 2) {
+									backup.setRGB(((x * scale) + scaleX),
+											((y * scale) + scaleY), black);
+								}
+								if (check == 3) {
+									backup.setRGB(((x * scale) + scaleX),
+											((y * scale) + scaleY), red);
+								}
+							}
+						}
+					}
+				}
+				try {
+					ImageIO.write(backup, "png", saveFile);
+				} catch (IOException ex) {
+				}
+			} else {
+				try {
+					ImageIO.write(frame.getMapImage(), "png", saveFile);
+				} catch (IOException ex) {
+				}
+			}
+			mapOutputNames.remove(0);
+		}
 	}
 
 	private int randomNumber(int min, int max) {
@@ -171,6 +234,27 @@ public class MasterControlProgram {
 				mapRepresentation.setSts(i, j, randomNumber(0, 4));
 			}
 		}
+	}
+
+	public void addCollectionTarget(String x1, String y1, String x2, String y2) {
+		double tempX1 = Double.parseDouble(x1);
+		double tempY1 = Double.parseDouble(y1);
+		double tempX2 = Double.parseDouble(x2);
+		double tempY2 = Double.parseDouble(y2);
+
+		targetCollectionPoint[0] = tempX1 + ((tempX2 - tempX1) / 2);
+		targetCollectionPoint[1] = tempY1 + ((tempY2 - tempY1) / 2);
+
+		if ((tempX2 - tempX1) > (tempY2 - tempY1)) {
+			targetCollectionSize = Math.abs((tempY2 - tempY1));
+		} else {
+			targetCollectionSize = Math.abs((tempX2 - tempX1));
+		}
+
+		System.out.println("Target mid x: " + targetCollectionPoint[0]);
+		System.out.println("Target mid y: " + targetCollectionPoint[1]);
+
+		System.out.println("Targetbox size: " + targetCollectionSize);
 	}
 
 }

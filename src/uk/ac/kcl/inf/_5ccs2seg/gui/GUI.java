@@ -46,7 +46,7 @@ public class GUI extends JFrame {
 
 	private int maxX;
 	private int maxY;
-	private int scale = 4;
+	private int scale = 2;
 
 	public GUI(MasterControlProgram mcp) {
 		super("Robot GUI");
@@ -135,6 +135,10 @@ public class GUI extends JFrame {
 
 	public String getFileName() {
 		return filename.getText();
+	}
+	
+	public BufferedImage getMapImage(){
+		return map;
 	}
 
 	public void update() {

@@ -9,9 +9,10 @@ package uk.ac.kcl.inf._5ccs2seg.data;
 public class GridMap {
 
 	private final int[][] grid;
-	private final static int maxX = 200;
-	private final static int maxY = 200;
-	private final int cellsPerMeter = 4;
+	private final static int cellsPerMeter = 4;
+
+	private final static int maxX = 45 * cellsPerMeter;
+	private final static int maxY = 30 * cellsPerMeter;
 
 	public GridMap() {
 
@@ -121,8 +122,8 @@ public class GridMap {
 	 */
 	public double[] arrayIndexToCoordCalc(int x, int y) {
 		double[] indexes = new double[2];
-		double tempX = ((x - (maxX / 2)) / cellsPerMeter);
-		double tempY = (-(y- (maxY / 2)) / cellsPerMeter) ;
+		double tempX = (((double)x - ((double)maxX / 2)) / (double)cellsPerMeter) + ((1/cellsPerMeter)/2);
+		double tempY = (-((double)y- ((double)maxY / 2)) / (double)cellsPerMeter) + ((1/cellsPerMeter)/2);
 		indexes[0] = tempX;
 		indexes[1] = tempY;
 		return indexes;

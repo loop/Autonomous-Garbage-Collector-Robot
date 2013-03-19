@@ -27,7 +27,13 @@ public class Controller implements ActionListener {
 		String actionRequested = action.getActionCommand();
 		if (actionRequested.equals("Save")) {
 			if (frame.getFileName().length() > 3) {
-				model.addMapname(frame.getFileName());
+				model.addMapOutput(frame.getFileName());
+				model.saveMap();
+				JOptionPane
+				.showMessageDialog(
+						frame,
+						frame.getFileName() + ".png saved to main application folder",
+						"OK", JOptionPane.INFORMATION_MESSAGE);
 			} else {
 				JOptionPane
 						.showMessageDialog(
@@ -39,19 +45,10 @@ public class Controller implements ActionListener {
 		if (actionRequested.equals("Solo")) {
 			frame.setMulti();
 			MasterControlProgram.setSolo(false);
-			model.getGrid().setSts(9, 11, 3);
-			for(int y = 0; y < 10; y++){
-				for(int x = 0; x < 20; x++){
-					System.out.print(model.getGrid().getSts(x, y));
-				}
-				System.out.println(" ");
-			}
-			frame.update();
 		}
 		if (actionRequested.equals("Multi")) {
 			frame.setSolo();
 			MasterControlProgram.setSolo(true);
-			frame.update();
 		}
 		if (actionRequested.equals("Explore")) {
 			model.explore();
