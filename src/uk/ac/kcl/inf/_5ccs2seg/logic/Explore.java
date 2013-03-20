@@ -21,13 +21,14 @@ public class Explore {
 	private ArrayList<double[]> garbageL = new ArrayList<double[]>();
 	private boolean done = false;
 	private int threadSleep = 16;
+	private int counter = 0;
 	private ArrayList<Node> path;
 	int  unreachCount = 0;
 	MasterControlProgram mcp;
 
 	public Explore(MasterControlProgram mcp, Bot cleaner) {
 		map = mcp.getGrid();
-		cleaner1 = mcp.getCleaner(1);
+		cleaner1 = mcp.getCleaner(cleaner.getBot());
 		this.mcp = mcp;
 		try {
 			Thread.sleep(1000);
@@ -46,6 +47,7 @@ public class Explore {
 				double ang;
 				while (!getFlag()) {
 					ang = 337;
+					counter = 0;
 					for (int i = 0; i<9; i++){
 							
 					if (i==4){ang = 0;}
@@ -68,6 +70,7 @@ public class Explore {
 							map.setSts(arr2[0], arr2[1], 1);
 						}
 						range = range - step;
+						counter++;
 					}
 
 					}
@@ -262,7 +265,11 @@ public class Explore {
 		
 		if (map.getSts(i, j) == 0) {
 			return true;
-		} else {
+		} 
+		if(map.getSts(i, j) == 2 && counter == 12){
+			return true;
+			
+		}else {
 			return false;
 		}
 

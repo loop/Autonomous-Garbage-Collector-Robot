@@ -1,6 +1,8 @@
 package uk.ac.kcl.inf._5ccs2seg.logic;
 
-import java.util.ArrayList;
+import javaclient3.FiducialInterface;
+import javaclient3.structures.fiducial.PlayerFiducialItem;
+
 
 import uk.ac.kcl.inf._5ccs2seg.data.Bot;
 import uk.ac.kcl.inf._5ccs2seg.data.TargetBox;
@@ -48,6 +50,7 @@ public class WallFollow {
 		wallFollowThread(1);
 		targetThread();
 		targetOwnThread();
+		botSeenThread();
 		
 	}
 
@@ -114,38 +117,64 @@ public class WallFollow {
 				while (!STOP) 
 				{
 
-					if (dir == 0) {
-						cleaner_1.setSpeed(0);
-						cleaner_1.setTRate(0.2);
-						try {
-							Thread.sleep((long)(((90*d+ cleaner_1.calcTurn(0))/0.2)*1000));
-						} catch (InterruptedException e) {
-							
-						}
-						cleaner_1.setTRate(0);
-						// turn(90*d + calcTurn(0),0.4);
-						cleaner_1.setSpeed(0.4);
-					}
+					
 					if (dir == 1) {						
-						cleaner_1.setSpeed(0);
-						cleaner_1.setTRate(-0.3);
+						cleaner_1.setSpeed(-0.2);
+						
 						try {
-							Thread.sleep((long)(((180*d + cleaner_1.calcTurn(0))/0.3)*1000));
-						} catch (InterruptedException e) {
-							
+							Thread.sleep(200);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
 						}
-						cleaner_1.setTRate(0);
-						cleaner_1.setTRate(0.5);						
-						cleaner_1.pause((long)(((90*d)/0.5)*1000));						
+						
+						cleaner_1.setSpeed(0);
+						
+						if( cleaner_1.getLeftRange() + cleaner_1.getRightRange() < 1.2)
+						{
+							if(cleaner_1.getLeftRange() > cleaner_1.getRightRange())
+							{
+								cleaner_1.turn(45*d, 0.5);
+								do	{
+									cleaner_1.setSpeed(-0.1);
+									}
+								while(cleaner_1.getBackRange() > 0.5);
+								
+								cleaner_1.setSpeed(0);
+								cleaner_1.turn(135*d, 0.5);
+								cleaner_1.setSpeed(0.4);
+								
+							}
+							else
+							{
+								cleaner_1.turn(-45*d, 0.5);
+								do	{
+									cleaner_1.setSpeed(-0.1);
+									}
+								while(cleaner_1.getBackRange() > 0.5);
+								
+								cleaner_1.setSpeed(0);
+								cleaner_1.turn(-135*d, 0.5);
+								cleaner_1.setSpeed(0.4);						
+							}
+						}
+						else
+						{
+							cleaner_1.setTRate(-0.3);
+							try {
+								Thread.sleep((long)(((180*d + cleaner_1.calcTurn(0))/0.3)*1000));
+							} catch (InterruptedException e) {
+								
+							}
+							cleaner_1.setTRate(0);
+							cleaner_1.setTRate(0.5);						
+							cleaner_1.pause((long)(((90*d)/0.5)*1000));						
+								
 							
-						
-						cleaner_1.setTRate(0);
-						
-						cleaner_1.setSpeed(0.4);
-						
-					} else {
-						System.err.println("Invalid direction!");
-						System.exit(1);
+							cleaner_1.setTRate(0);
+							
+							cleaner_1.setSpeed(0.4);
+						}						
 					}
 
 					while (cleaner_1.getFrontRange() > 0.9) {
@@ -339,6 +368,36 @@ public class WallFollow {
 			}
 		};
 		targetOwn.start();
+	}
+	
+	protected synchronized void botSeenThread() {
+		Thread botSeen = new Thread() {
+			@Override
+			public void run() {
+				
+				while (!STOP) {
+					
+					PlayerFiducialItem[] fid = cleaner_1.getFiducials();
+					for(int i = 0; i < fid.length; i++)
+					{
+						if(fid[i].getId() == 1)
+						{
+							double dx = fid[i].getPose().getPx();
+							double dy = fid[i].getPose().getPy();
+							double d = Math.sqrt((dx*dx) + (dy*dy));
+							
+							while(d < 1.5 && cleaner_1.getBackRange() < 0.4)
+							{
+								cleaner_1.setSpeed(dx - 2);
+							}							
+							
+							
+						}
+					}
+				}
+			}
+		};
+		botSeen.start();
 	}
 	
 	// CONTROL METHODS

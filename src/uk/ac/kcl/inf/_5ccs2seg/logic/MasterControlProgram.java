@@ -79,10 +79,10 @@ public class MasterControlProgram {
 	}
 
 	public Bot getCleaner(int bot) {
-		if (bot == 1) {
+		if (bot == 0) {
 			return cleaner1;
 		}
-		if (bot == 2) {
+		if (bot == 1) {
 			return cleaner2;
 		}
 		return cleaner3;
