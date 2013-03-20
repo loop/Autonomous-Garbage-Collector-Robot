@@ -1,5 +1,4 @@
 package uk.ac.kcl.inf._5ccs2seg.logic;
-
 import java.util.ArrayList;
 
 import uk.ac.kcl.inf._5ccs2seg.data.GridMap;
@@ -17,11 +16,12 @@ public class AStarAlg {
 	private Node current;
 	private Node goal;
 	private boolean stop = false;
+	private boolean noPath = false;
 	private ArrayList<Node> openLi = new ArrayList<Node>();
 	private ArrayList<Node> closeLi = new ArrayList<Node>();
 
 	public AStarAlg(Node start, Node goal, GridMap map) {
-
+		
 		this.map = map;
 		this.start = start;
 		this.goal = goal;
@@ -34,7 +34,7 @@ public class AStarAlg {
 	 * 
 	 * @return
 	 */
-	public ArrayList<double[]> plan() {
+	public ArrayList<Node> plan() {
 
 		while (true) {
 
@@ -55,8 +55,10 @@ public class AStarAlg {
 			for (int i = ii - 1; i <= ii + 1; i++) {
 				for (int j = jj - 1; j <= jj + 1; j++) {
 					cur = new Node(i, j);
-
+					
+					if(ii == i || jj == j ){
 					// step 3a
+					//System.out.println(map.getMap()[i][j]);
 					if (map.getMap()[i][j] == 1 && closeLi.indexOf(cur) < 0) { // if
 																				// it
 																				// is
@@ -88,31 +90,30 @@ public class AStarAlg {
 							}
 						}
 					}
+					}
 				}
 			}
 		}
 
 		// System.out.println(closeLi);
 		// PATH
-		int count = 0;
-		ArrayList<double[]> res = new ArrayList<double[]>();
-		int[] arr = closeLi.get(closeLi.size() - 1).getArr();
-		res.add(map.arrayIndexToCoordCalc(arr[0], arr[1]));
+		ArrayList<Node> res = new ArrayList<Node>();
+		if (!noPath){
+		Node currr = closeLi.get(closeLi.size() - 1);
+		res.add(currr);
 
 		while (true) {
-			arr = closeLi.get(closeLi.indexOf(new Node(arr[5], arr[6])))
-					.getArr();
-			if (arr[5] == 0 && arr[6] == 0) {
+			currr = closeLi.get(closeLi.indexOf(new Node(currr.getArr(5),currr.getArr(6))));
+			if (currr.getArr(5) == 0 && currr.getArr(6) == 0) {
 				break;
 			}
-			if (count == 1) {
-				res.add(map.arrayIndexToCoordCalc(arr[0], arr[1]));
-				count = 0;
-			} else {
-				count = count + 1;
-			}
+			res.add(currr);
+				
 		}
-
+		}
+		else {
+			res.add(start);
+		}
 		// System.out.println(res);
 
 		return res;
@@ -137,6 +138,10 @@ public class AStarAlg {
 		openLi.remove(current);
 		if (current.equals(goal)) {
 			stop = true;
+		}
+		if (openLi.isEmpty() && !current.equals(start)){
+			stop = true; 
+			noPath = true;
 		}
 	}
 
@@ -199,7 +204,33 @@ public class AStarAlg {
 
 		// calc F
 		res[0] = res[1] + arr[4];
-
+		
+		//calc score that ajusts for wall distance
+		int difI;
+		int difJ;
+		int score;
+		int bScore = 0;
+	
+		
+		for (int a = 0; a<4; a++){
+			if (a == 0){difI = 0; difJ = 1;}
+			else if (a == 1){difI = 0; difJ = -1;}
+			else if (a == 1){difI = 1; difJ = 0;}
+			else {difI = -1; difJ = 0;}
+		
+		for (int z = 1; z<=6; z++){
+			if (map.getMap()[arr[0] + difI][arr[1] + difJ] == 2){
+				score = 70 - (z * 10);
+				if (score > bScore) {bScore = score;}
+				break;
+			}	
+		}
+		}
+		
+		
+		// calc F
+		res[0] = res[0] + bScore;
+		
 		return res;
 	}
 

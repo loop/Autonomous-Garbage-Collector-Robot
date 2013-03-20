@@ -46,7 +46,7 @@ public class GUI extends JFrame {
 
 	private int maxX;
 	private int maxY;
-	private int scale = 2;
+	private int scale = 4;
 
 	public GUI(MasterControlProgram mcp) {
 		super("Robot GUI");
@@ -162,17 +162,21 @@ public class GUI extends JFrame {
 						if (check == 0) {
 							map.setRGB( ((x * scale) + scaleX) , ((y * scale) + scaleY), grey);
 						}
-						if (check == 1) {
+						else if (check == 1) {
 							map.setRGB(((x * scale) + scaleX),
 									((y * scale) + scaleY), white);
 						}
-						if (check == 2) {
+						else if (check == 2) {
 							map.setRGB(((x * scale) + scaleX),
 									((y * scale) + scaleY), black);
 						}
-						if (check == 3) {
+						else if (check == 3) {
 							map.setRGB(((x * scale) + scaleX),
 									((y * scale) + scaleY), red);
+						}
+						else if (check == 4) {
+							map.setRGB(((x * scale) + scaleX),
+									((y * scale) + scaleY), blue);
 						}
 					}
 				}

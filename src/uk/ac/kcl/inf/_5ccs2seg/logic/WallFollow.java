@@ -30,6 +30,8 @@ public class WallFollow {
 	private int counter = 1;
 			
 	private Bot cleaner_1;
+	
+	MasterControlProgram mcp;
 
 	/**
 	 * Instantiates a new follow2_3.
@@ -39,8 +41,8 @@ public class WallFollow {
 	 * @param debug
 	 *            the debug
 	 */
-	public WallFollow(Bot cleaner) {
-		
+	public WallFollow(Bot cleaner, MasterControlProgram mcp) {
+		this.mcp = mcp;
 		cleaner_1 = cleaner;
 		findNearestWall();
 		wallFollowThread(1);
@@ -62,6 +64,11 @@ public class WallFollow {
 	 * Find nearest wall.
 	 */
 	public synchronized void findNearestWall() {
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+		}
+		
 		cleaner_1.setSpeed(0);
 		cleaner_1.turnTo(90);
 	
@@ -275,6 +282,8 @@ public class WallFollow {
 						if ((cleaner_1.getStart().get(count).getIndex() != getIndex())
 								&& cleaner_1.getStart().get(count).checkTarget(cleaner_1.getX(),
 										cleaner_1.getY())) {
+							mcp.setWallF(true);
+							System.out.println("2");
 							STOP = true;
 							
 						}
@@ -311,7 +320,11 @@ public class WallFollow {
 						
 						if (cleaner_1.getStart().get(count).checkTarget(cleaner_1.getX(),
 										cleaner_1.getY())) {
+							
+							mcp.setWallF(true);
+							System.out.println("1");
 							STOP = true;
+							
 							
 							
 						}

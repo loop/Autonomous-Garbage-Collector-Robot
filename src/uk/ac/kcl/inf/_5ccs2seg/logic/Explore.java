@@ -1,5 +1,4 @@
 package uk.ac.kcl.inf._5ccs2seg.logic;
-
 import java.util.ArrayList;
 
 import uk.ac.kcl.inf._5ccs2seg.data.Bot;
@@ -19,16 +18,21 @@ import javaclient3.structures.fiducial.PlayerFiducialItem;
 public class Explore {
 	private GridMap map;
 	private Bot cleaner1;
-	
 	private ArrayList<double[]> garbageL = new ArrayList<double[]>();
 	private boolean done = false;
 	private int threadSleep = 16;
+	private ArrayList<Node> path;
+	int  unreachCount = 0;
+	MasterControlProgram mcp;
 
 	public Explore(MasterControlProgram mcp, Bot cleaner) {
 		map = mcp.getGrid();
-		cleaner1 = mcp.getCleaner(1);		
-
-		
+		cleaner1 = mcp.getCleaner(1);
+		this.mcp = mcp;
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+		}
 		// New thread that updates the map from the sensor readings
 		Thread updateGrid = new Thread() {
 			public void run() {
@@ -83,7 +87,7 @@ public class Explore {
 						double x; double xx;
 						double y; double yy;
 						double yaw; double alpha;
-						double dist;
+						double dist; double head;
 						double arr[];
 						while (!getFlag()) {
 							
@@ -92,6 +96,7 @@ public class Explore {
 								x = cleaner1.getX();
 								y = cleaner1.getY();
 								yaw = cleaner1.getYaw();
+								head = cleaner1.getHead();
 								
 							for (int i = 0; i < fiduc.length; i++){
 								xx = fiduc[i].getPose().getPx();
@@ -99,7 +104,32 @@ public class Explore {
 								dist = Math.sqrt(Math.pow(xx,2)+Math.pow(yy,2));
 								alpha = yaw + Math.atan(yy/xx);
 								arr = calcCoord(x, y, alpha, dist);
-								arr[1] = arr[1] + 0.2;
+								
+								//adjust for fiducial placement
+								double ajust;
+								if (head >= 0 && head <= 90){
+									ajust = head * 0.0022;
+									arr[1] = arr[1] + ajust;
+									arr[0] = arr[0] + (0.2-ajust);
+								}
+								else if (head > 90 && head <= 180){
+									head = head - 90;
+									ajust = head * 0.0022;
+									arr[0] = arr[0] + (ajust*-1);
+									arr[1] = arr[1] + (0.2-ajust);
+								}
+								else if (head >= -180 && head <= -90){
+									head = Math.abs(head) - 90;
+									ajust = head * 0.0022;
+									arr[0] = arr[0] + (ajust*-1);
+									arr[1] = arr[1] + ((0.2-ajust)*-1);
+								}
+								else{
+									ajust = Math.abs(head) * 0.0022;
+									arr[1] = arr[1] + (ajust*-1);
+									arr[0] = arr[0] + (0.2-ajust);
+								}
+								
 								
 								int cnt = 0;
 								double d;
@@ -112,18 +142,18 @@ public class Explore {
 									cnt++;
 								}
 								
-								if (cnt == size || size == 0 ){
+								if ((cnt == size || size == 0) && fiduc[i].getId() != 1){
 									garbageL.add(arr);
 									map.setSts(arr[0], arr[1], 3); 
 								}
-								//System.out.println(garbageL);
+								
 								
 								//TEST
-								for (int j =0; j < garbageL.size(); j++){
-									double[] arrr =  garbageL.get(j);
-									System.out.println(j + ": " + "(" + arrr[0] + ", " + arrr[1] + ")");
-								}
-								System.out.println();
+								//for (int j =0; j < garbageL.size(); j++){
+									//double[] arrr =  garbageL.get(j);
+									//System.out.println(j + ": " + "(" + arrr[0] + ", " + arrr[1] + ")");
+								//}
+								//System.out.println();
 							}
 							}
 							try {
@@ -137,31 +167,85 @@ public class Explore {
 		
 		
 				Thread go = new Thread() {
-					public void run() {
+					public void run() {	
+						Node start;
+						Node goal;
+						Node oldGoal = new Node(-1,-1);
+						int[] arr;
+						ArrayList<double[]> road = new ArrayList<double[]>();
 						
-						while (!getFlag()) {
-		
-							
-							
+						System.out.println(Explore.this.mcp.getWallF());
+						while(!Explore.this.mcp.getWallF()){try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+						}}
+						
+						while (!getFlag()) {			
 							try {
 								Thread.sleep(10000);
 							} catch (InterruptedException e) {
 							}
-							int[] arr = map.coordToArrayIndexCalc(cleaner1.getX(), cleaner1.getY());
-						Node f = new Node(arr[0],arr[1]);
-						 Node n = new NextLoc(f, map).calc();
-						 double[] arr2 = map.arrayIndexToCoordCalc(n.getArr(0), n.getArr(1));
+							arr = map.coordToArrayIndexCalc(cleaner1.getX(), cleaner1.getY());
+						 start = new Node(arr[1],arr[0]);
+						 System.out.println("issuse");
+						 goal = new NextLoc(start, map).calc();
+						
+						 //
+						 System.out.println(goal);
+						
+						 //the whole map has been covered
+						 if (goal.getArr(0) < 0){
+							 setFlag(true); 
+							 System.out.println("Covered");  break;
+						 }
 						 
-						 System.out.println(arr2[1] + "======" + arr2[0]);
+						 //deal with unreachable squares
+						 if(goal.equals(oldGoal)){
+							 unreachCount++;
+							 if (unreachCount >= 3){
+								 map.setSts(goal.getArr(1), goal.getArr(0), 2);
+							 }
+						 } else {unreachCount = 0;}
+						 oldGoal = goal;
+						 
+						 
+						 //DISPLAY PATH
+						if (path != null){
+							for (int i = 0; i < path.size(); i++){
+								map.setSts(path.get(i).getArr(1), path.get(i).getArr(0), 1);
+							}
+						}
+						
+						//
+						double[] arrr = new double[2];
+						path = new AStarAlg(start,goal,map).plan();
+						for (int i = path.size()-1; i >= 0 ; i--){
+							map.setSts(path.get(i).getArr(1), path.get(i).getArr(0), 4);
+							arrr = map.arrayIndexToCoordCalc(path.get(i).getArr(1),path.get(i).getArr(0));
+							road.add(arrr);
+						}
+						
+						//TEST
+						//for (int i =0; i < road.size(); i++){
+							//double[] arrrr =  road.get(i);
+							//System.out.println(i + ": " + "(" + arrrr[0] + ", " + arrrr[1] + ")");
+						//}
+						//System.out.println();
+						
+						//FOLLOW PATH
+						 //
+						 //
+						
+						
+						
+						
 							}
 						}
 					
 					
 				};
-				//go.start();
+				go.start();
 		
-	
-		// setFlag(true);
 	}
 
 	private static double[] calcCoord(double x, double y, double alpha,
@@ -191,5 +275,6 @@ public class Explore {
 	public synchronized boolean getFlag() {
 		return done;
 	}
+	
 
 }

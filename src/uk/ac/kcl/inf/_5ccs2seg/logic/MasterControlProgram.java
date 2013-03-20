@@ -19,6 +19,7 @@ public class MasterControlProgram {
 	private GUI frame;
 	private static boolean solo = true;
 	private boolean mapped = false;
+	private boolean wallF = false;
 	private int numberOfMaps = 0;
 	private List<String> argumentOrder = new LinkedList<String>();
 	private List<String> mapOutputNames = new LinkedList<String>();
@@ -135,28 +136,28 @@ public class MasterControlProgram {
 		if (!solo) {
 			System.out.println(getSolo());
 			cleaner1 = new Bot(0, false);
-			new WallFollow(cleaner1);
+			new WallFollow(cleaner1,this);
 			new Explore(this, cleaner1);
 
 			cleaner2 = new Bot(1, false);
-			new WallFollow(cleaner2);
+			new WallFollow(cleaner2,this);
 			new Explore(this, cleaner2);
 
 			cleaner3 = new Bot(2, false);
-			new WallFollow(cleaner3);
+			new WallFollow(cleaner3,this);
 			new Explore(this, cleaner3);
 			System.out
 					.println("Exploring mappig envi(muti) and probably returning data structure");
-			mapped = true;
+			
 		} else {
 			cleaner1 = new Bot(0, false);
-			new WallFollow(cleaner1);
+			new WallFollow(cleaner1,this);
 			new Explore(this, cleaner1);
 
 			System.out
 					.println("Exploring mappig envi(solo) and probably returning data structure");
 
-			mapped = true;
+			
 		}
 	}
 
@@ -180,7 +181,7 @@ public class MasterControlProgram {
 				int grey = 0x888888;
 				int white = 0xFFFFFF;
 
-				int scale = 2;
+				int scale = 4;
 				int check = 0;
 				for (int y = 0; y < (maxSizeOfY / scale); y++) {
 					for (int x = 0; x < (maxSizeOfX / scale); x++) {
@@ -193,18 +194,22 @@ public class MasterControlProgram {
 									backup.setRGB(((x * scale) + scaleX),
 											((y * scale) + scaleY), grey);
 								}
-								if (check == 1) {
+								else if (check == 1) {
 									backup.setRGB(((x * scale) + scaleX),
 											((y * scale) + scaleY), white);
 								}
-								if (check == 2) {
+								else if (check == 2) {
 									backup.setRGB(((x * scale) + scaleX),
 											((y * scale) + scaleY), black);
 								}
-								if (check == 3) {
+								else if (check == 3) {
 									backup.setRGB(((x * scale) + scaleX),
 											((y * scale) + scaleY), red);
 								}
+								else if (check == 4) {
+									backup.setRGB(((x * scale) + scaleX),
+									((y * scale) + scaleY), blue);
+						}
 							}
 						}
 					}
@@ -257,4 +262,11 @@ public class MasterControlProgram {
 		System.out.println("Targetbox size: " + targetCollectionSize);
 	}
 
+	public synchronized void setWallF(boolean value) {
+		wallF = value;
+	}
+
+	public synchronized boolean getWallF() {
+		return wallF;
+	}
 }
