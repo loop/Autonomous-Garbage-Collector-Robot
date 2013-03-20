@@ -15,9 +15,16 @@ public class NextLoc {
 	private ArrayList<Node> list = new ArrayList<Node>();
 
 	public NextLoc(Node start, GridMap grid) {
-
+			int x = grid.getMaxX();
+			int y = grid.getMaxY();
 			this.grid = grid;
-			map = grid.getMap();
+			map = new int[y][x];
+			int[][] ma = grid.getMap();
+			for (int i = 0; i<y; i++){
+				for (int j = 0; j<x; j++){
+					map[i][j] = ma[i][j];
+				}
+			}
 			this.start = start;
 			list.add(this.start);
 		}
@@ -33,7 +40,7 @@ public class NextLoc {
 		current = list.get(0);	
 		int ii = current.getArr(0);
 		int jj = current.getArr(1);
-		map[ii][jj] = 9;
+		map[ii][jj] = 8;
 		for (int i = ii - 1; i <= ii + 1; i++) {
 			for (int j = jj - 1; j <= jj + 1; j++) {
 				if(ii == i || jj == j ){
@@ -41,8 +48,8 @@ public class NextLoc {
 					checkCell(i, j);
 					if (stop) {break main;}
 				}
-				else if (map[i][j] == 9 || map[i][j] == 2 || map[i][j] == 4){}
-				else{
+				else if (map[i][j] == 9 || map[i][j] == 2 || map[i][j] == 8){}
+				else if (map[i][j] == 1 && list.indexOf(new Node(i,j)) < 0){
 					list.add(new Node(i, j));				
 				}
 			}	
@@ -61,10 +68,12 @@ public class NextLoc {
 		double[] arr2 = grid.arrayIndexToCoordCalc(start.getArr(0), start.getArr(1));
 		double d;
 		//check adj
-		if (map[i-1][j] == 1 || map[i+1][j] ==  1 || map[i][j+1] ==  1 || map[i][j-1] == 1 ){
+		if (map[i-1][j] == 1 || map[i+1][j] ==  1 || map[i][j+1] ==  1 || map[i][j-1] == 1 
+				|| map[i-1][j] == 8 || map[i+1][j] ==  8 || map[i][j+1] ==  8|| map[i][j-1] == 8){
 			d = Math.sqrt(Math.pow((arr[0]-arr2[0]),2)+
 					Math.pow((arr[1]-arr2[1]),2));
 			if (d > 1.7){
+				grid.setSts(j, i, 1);
 				goal = new Node(i,j);
 				stop = true;
 				return;
