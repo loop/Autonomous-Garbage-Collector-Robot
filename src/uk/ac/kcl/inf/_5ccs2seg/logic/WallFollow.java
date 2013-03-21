@@ -50,6 +50,7 @@ public class WallFollow {
 	
 	public WallFollow(Bot cleaner, MasterControlProgram mcp) {
 		this.mcp = mcp;
+		mcp.setMaping(true);
 		cleaner_1 = cleaner;
 		findNearestWall();
 		Target();

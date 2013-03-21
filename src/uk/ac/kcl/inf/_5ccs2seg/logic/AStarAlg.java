@@ -218,12 +218,20 @@ public class AStarAlg {
 			else if (a == 1){difI = 1; difJ = 0;}
 			else {difI = -1; difJ = 0;}
 		
-		for (int z = 1; z<=6; z++){
+		for (int z = 1; z<=12; z++){
 			if (map.getMap()[arr[0] + difI][arr[1] + difJ] == 2){
-				score = 70 - (z * 10);
-				if (score > bScore) {bScore = score;}
+				score = 1040 - (z * 80);
+				if (z == 1){ score = score + 5000000;}
+				else if (z == 2){ score = score + 50000;}
+				else if (z == 3){ score = score + 50000;}
+				else if (z == 4){ score = score + 10000;}
+				else if (score > bScore) {bScore = score;}
 				break;
-			}	
+			}
+			if (difI > 0){difI++;}
+			else if (difI < 0){difI--;}
+			if (difI > 0){difJ++;}
+			else if (difI < 0){difJ--;}
 		}
 		}
 		

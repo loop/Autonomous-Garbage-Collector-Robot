@@ -9,10 +9,10 @@ package uk.ac.kcl.inf._5ccs2seg.data;
 public class GridMap {
 
 	private final int[][] grid;
-	private final static int cellsPerMeter = 4;
+	private final static int cellsPerMeter = 8;
 
-	private final static int maxX = 45 * cellsPerMeter;
-	private final static int maxY = 30 * cellsPerMeter;
+	private final static int maxX = 50 * cellsPerMeter;
+	private final static int maxY = 34 * cellsPerMeter;
 
 	public GridMap() {
 

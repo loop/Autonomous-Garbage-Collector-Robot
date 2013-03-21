@@ -20,11 +20,12 @@ public class Explore {
 	private Bot cleaner1;
 	private ArrayList<double[]> garbageL = new ArrayList<double[]>();
 	private boolean done = false;
+	private boolean imminent = false;
 	private int threadSleep = 16;
 	private int counter = 0;
 	private ArrayList<Node> path;
-	int  unreachCount = 0;
-	MasterControlProgram mcp;
+	private int  unreachCount = 0;
+	private MasterControlProgram mcp;
 
 	public Explore(MasterControlProgram mcp, Bot cleaner) {
 		map = mcp.getGrid();
@@ -41,7 +42,7 @@ public class Explore {
 				double alpha;
 				double x;
 				double y; 
-				double step = 0.125;
+				double step = 0.09;
 				double[] arr;
 				int[] arr2;
 				double ang;
@@ -141,7 +142,7 @@ public class Explore {
 									d = Math.sqrt(Math.pow((arr[0]-garbageL.get(j)[0]),2)+
 											Math.pow((arr[1]-garbageL.get(j)[1]),2));
 									//System.out.println(d);
-									if (d<0.6){break;}
+									if (d<1){break;}
 									cnt++;
 								}
 								
@@ -177,17 +178,21 @@ public class Explore {
 						int[] arr;
 						ArrayList<double[]> road = new ArrayList<double[]>();
 						
+						
 						System.out.println(Explore.this.mcp.getWallF());
 						while(!Explore.this.mcp.getWallF()){try {
 							Thread.sleep(500);
 						} catch (InterruptedException e) {
 						}}
 						
+						filterNoise();
+						
 						while (!getFlag()) {			
 							try {
-								Thread.sleep(10000);
+								Thread.sleep(25);
 							} catch (InterruptedException e) {
 							}
+						
 							arr = map.coordToArrayIndexCalc(cleaner1.getX(), cleaner1.getY());
 						 start = new Node(arr[1],arr[0]);
 						 System.out.println("issuse");
@@ -196,13 +201,26 @@ public class Explore {
 						 //
 						 System.out.println(goal);
 						
+						  //DISPLAY PATH
+						if (path != null){
+							for (int i = 0; i < path.size(); i++){
+								map.setSts(path.get(i).getArr(1), path.get(i).getArr(0), 1);
+							}
+						}
+						 
+						 
 						 //the whole map has been covered
-						 if (goal.getArr(0) < 0){
-							 setFlag(true); 
+						 if (goal.getArr(0) < 0 || goal.getArr(1) < 0 ){
+							 
+							 setFlag(true);
+							 filterNoise();
+							 Explore.this.mcp.setGlist(garbageL);
+							 Explore.this.mcp.setMapped(true);
+							 Explore.this.mcp.setMaping(false);
 							 System.out.println("Covered");  break;
 						 }
 						 
-						 //deal with unreachable squares
+						 //deals with unreachable squares
 						 if(goal.equals(oldGoal)){
 							 unreachCount++;
 							 if (unreachCount >= 3){
@@ -212,12 +230,7 @@ public class Explore {
 						 oldGoal = goal;
 						 
 						 
-						 //DISPLAY PATH
-						if (path != null){
-							for (int i = 0; i < path.size(); i++){
-								map.setSts(path.get(i).getArr(1), path.get(i).getArr(0), 1);
-							}
-						}
+						
 						
 						//
 						double[] arrr = new double[2];
@@ -229,15 +242,59 @@ public class Explore {
 						}
 						
 						//TEST
-						//for (int i =0; i < road.size(); i++){
-							//double[] arrrr =  road.get(i);
-							//System.out.println(i + ": " + "(" + arrrr[0] + ", " + arrrr[1] + ")");
-						//}
-						//System.out.println();
+						
+						for (int i =0; i < road.size(); i++){
+							double[] arrrr =  road.get(i);
+							System.out.println(i + ": " + "(" + arrrr[0] + ", " + arrrr[1] + ")");
+						}
+						System.out.println();
 						
 						//FOLLOW PATH
 						 //
 						 //
+						setIm(false);
+						if(path == null)
+						{
+							cleaner1.setSpeed(0);
+							cleaner1.setTRate(0);
+						}
+							for(int i = 0; i < road.size(); i++)
+							{
+								if( i % 4 == 0)
+								{
+									double x = road.get(i)[0];
+									double y = road.get(i)[1];
+									
+									if( path == null ) 
+									{
+										road.clear();
+										break;
+									}
+									
+									double dx = x - cleaner1.getX();
+									double dy = y - cleaner1.getY();
+									
+									double dist = Math.sqrt((dx*dx) +(dy*dy));
+									
+									while( dist > 0.8 && !getIm())
+									{
+										cleaner1.moveTo(x, y);
+										
+										dx = x - cleaner1.getX();
+										dy = y - cleaner1.getY();
+										
+										dist = Math.sqrt((dx*dx) +(dy*dy));
+										
+										try {
+											Thread.sleep(25);
+										} catch (InterruptedException e) {
+											
+										}
+									}
+									
+								}
+							}
+							road.clear();
 						
 						
 						
@@ -248,10 +305,40 @@ public class Explore {
 					
 				};
 				go.start();
+				
+				Thread collision= new Thread() {
+					public void run() {
+						while(!Explore.this.mcp.getWallF())
+						{try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+						}}
+						while (!getFlag()) {
+							for (int i = 9; i < 16; i++){
+								if (cleaner1.getRange(i) < 0.25){
+									setIm(true);
+									System.out.println(cleaner1.getRange(i));
+									cleaner1.stop();
+									try {
+										Thread.sleep(1200);
+									} catch (InterruptedException e) {
+									}
+								}
+							}
+							
+							try {
+								Thread.sleep(25);
+							} catch (InterruptedException e) {
+							}
+						}
+					}
+				};
+				collision.setPriority(Thread.MAX_PRIORITY);	
+				collision.start();
 		
 	}
 
-	private static double[] calcCoord(double x, double y, double alpha,
+	public static double[] calcCoord(double x, double y, double alpha,
 			double range) {
 
 		x = x + (Math.cos(alpha) * range);
@@ -275,12 +362,51 @@ public class Explore {
 
 	}
 
+	public  void filterNoise() {
+		/*
+		for (int i = 1; i < map.getMaxY()-1; i++){
+			for (int j = 1; j < map.getMaxX()-1; j++){
+				
+				if (map.getSts(j, i) == 2){
+					if ((map.getSts(j+1,i) == 1 && map.getSts(j-1,i) ==  1) || 
+							(map.getSts(j,i+1) ==  1 || map.getSts(j,i-1) == 1)){
+						map.setSts(j, i, 1);
+					}
+				}
+				
+				else if (map.getSts(j, i) == 1){
+					if ((map.getSts(j+1,i) == 2 && map.getSts(j-1,i) ==  2) || 
+							(map.getSts(j,i+1) ==  2 || map.getSts(j,i-1) == 2)){
+						map.setSts(j, i, 2);
+					}
+				}
+				
+				else if (map.getSts(j, i) == 0){
+					if ((map.getSts(j+1,i) == 2 && map.getSts(j-1,i) ==  2) || 
+							(map.getSts(j,i+1) ==  2 || map.getSts(j,i-1) == 2)){
+						map.setSts(j, i, 2);
+					}
+				}
+				
+			}
+		}
+		*/
+	}
+	
 	public synchronized void setFlag(boolean value) {
 		done = value;
 	}
 
 	public synchronized boolean getFlag() {
 		return done;
+	}
+	
+	public synchronized void setIm(boolean value) {
+		imminent = value;
+	}
+
+	public synchronized boolean getIm() {
+		return imminent;
 	}
 	
 

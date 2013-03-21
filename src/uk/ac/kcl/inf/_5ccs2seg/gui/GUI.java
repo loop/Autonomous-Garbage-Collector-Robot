@@ -31,10 +31,10 @@ public class GUI extends JFrame {
 	private MasterControlProgram mcp;
 
 	private JTextField filename;
-	private JTextField x1Drop;
-	private JTextField x2Drop;
-	private JTextField x3Drop;
-	private JTextField x4Drop;
+	public JTextField x1Drop;
+	public JTextField x2Drop;
+	public JTextField x3Drop;
+	public JTextField x4Drop;
 
 	private JLabel x1Label;
 	private JLabel x2Label;
@@ -46,7 +46,7 @@ public class GUI extends JFrame {
 
 	private int maxX;
 	private int maxY;
-	private int scale = 4;
+	private int scale = 2;
 
 	public GUI(MasterControlProgram mcp) {
 		super("Robot GUI");
@@ -88,9 +88,9 @@ public class GUI extends JFrame {
 		x4Drop = new JTextField("", 2);
 
 		x1Label = new JLabel("x1:");
-		x2Label = new JLabel("x2:");
-		x3Label = new JLabel("x3:");
-		x4Label = new JLabel("x4:");
+		x2Label = new JLabel("y1:");
+		x3Label = new JLabel("x2:");
+		x4Label = new JLabel("y2:");
 		setLayout(new BorderLayout(1, 1));
 
 		JPanel a1 = new JPanel();

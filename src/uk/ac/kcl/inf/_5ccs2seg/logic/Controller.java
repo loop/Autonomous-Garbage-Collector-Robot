@@ -54,9 +54,9 @@ public class Controller implements ActionListener {
 			model.explore();
 		}
 		if (actionRequested.equals("Collect")) {
-			JOptionPane.showMessageDialog(frame,
-					"We haven't implemented the collecting yet :(",
-					"Sorry about that", JOptionPane.ERROR_MESSAGE);
+			model.addCollectionTarget(frame.x1Drop.getText(), 
+					frame.x2Drop.getText(), frame.x3Drop.getText(), frame.x4Drop.getText());
+			model.collect();
 		}
 	}
 

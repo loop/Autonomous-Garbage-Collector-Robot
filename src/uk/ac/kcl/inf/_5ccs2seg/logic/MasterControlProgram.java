@@ -1,8 +1,12 @@
 package uk.ac.kcl.inf._5ccs2seg.logic;
 
+import Explore;
+import WallFollow;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,8 +23,11 @@ public class MasterControlProgram {
 	private GUI frame;
 	private static boolean solo = true;
 	private boolean mapped = false;
+	private boolean maping = false;
+	private boolean collecting = false;
 	private boolean wallF = false;
 	private int numberOfMaps = 0;
+	private ArrayList<double[]> garbageL;
 	private List<String> argumentOrder = new LinkedList<String>();
 	private List<String> mapOutputNames = new LinkedList<String>();
 
@@ -133,6 +140,7 @@ public class MasterControlProgram {
 	 * The robot(s) will start to explore and map the environment
 	 */
 	public void explore() {
+		if(!getMaping() && !getMapped()){
 		if (!solo) {
 			System.out.println(getSolo());
 			cleaner1 = new Bot(0, false);
@@ -157,13 +165,26 @@ public class MasterControlProgram {
 			cleaner3 = new Bot(2, false);
 			new WallFollow(cleaner2);
 			new WallFollow(cleaner3);
-			
 
 			System.out
 					.println("Exploring mappig envi(solo) and probably returning data structure");
 
 			
 		}
+		}
+	}
+	
+	public void collect(){
+		if(!getCollect()){
+			
+			if (!solo) {
+			
+			}
+			else{
+				new Collect(this, cleaner1);
+			}
+		}
+		else if (!getMaping()){explore();collect();}
 	}
 
 	public void linkFrame(GUI frame) {
@@ -273,5 +294,37 @@ public class MasterControlProgram {
 
 	public synchronized boolean getWallF() {
 		return wallF;
+	}
+	public synchronized void setMapped(boolean value) {
+		mapped = value;
+	}
+
+	public synchronized boolean getMapped() {
+		return mapped;
+	}
+	public synchronized void setMaping(boolean value) {
+		maping = value;
+	}
+
+	public synchronized boolean getMaping() {
+		return maping;
+	}
+	public synchronized void setCollect(boolean value) {
+		collecting = value;
+	}
+
+	public synchronized boolean getCollect() {
+		return collecting;
+	}
+	public synchronized void setGlist(ArrayList<double[]> list) {
+		garbageL = list;
+	}
+
+	public synchronized ArrayList<double[]> getGlist() {
+		return garbageL;
+	}
+	
+	public synchronized double[] getCPoint() {
+		return targetCollectionPoint;
 	}
 }
