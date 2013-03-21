@@ -153,6 +153,11 @@ public class MasterControlProgram {
 			cleaner1 = new Bot(0, false);
 			new WallFollow(cleaner1,this);
 			new Explore(this, cleaner1);
+			cleaner2 = new Bot(1, false);
+			cleaner3 = new Bot(2, false);
+			new WallFollow(cleaner2);
+			new WallFollow(cleaner3);
+			
 
 			System.out
 					.println("Exploring mappig envi(solo) and probably returning data structure");

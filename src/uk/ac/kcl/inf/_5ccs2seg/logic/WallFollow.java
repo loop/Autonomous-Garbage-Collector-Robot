@@ -1,6 +1,5 @@
 package uk.ac.kcl.inf._5ccs2seg.logic;
 
-import javaclient3.FiducialInterface;
 import javaclient3.structures.fiducial.PlayerFiducialItem;
 
 
@@ -43,14 +42,21 @@ public class WallFollow {
 	 * @param debug
 	 *            the debug
 	 */
+	public WallFollow(Bot cleaner) {		
+		cleaner_1 = cleaner;
+		findNearestWall();		
+		
+	}
+	
 	public WallFollow(Bot cleaner, MasterControlProgram mcp) {
 		this.mcp = mcp;
 		cleaner_1 = cleaner;
 		findNearestWall();
-		wallFollowThread(1);
+		Target();
+		wallFollowThread(1);		
 		targetThread();
 		targetOwnThread();
-		botSeenThread();
+		// botSeenThread();
 		
 	}
 
@@ -90,6 +96,11 @@ public class WallFollow {
 		}
 		cleaner_1.setSpeed(0);
 	
+		
+	}
+	
+	public void Target()
+	{
 		TargetBox start = new TargetBox(cleaner_1.getBot(), cleaner_1.getX(), cleaner_1.getY(),
 				cleaner_1.getHead(), getDir(), 2.0, "start");
 		cleaner_1.addStart(start);
@@ -100,6 +111,24 @@ public class WallFollow {
 				+ start.getBottom() + "\n X left = " + start.getLeft()
 				+ " X Right = " + start.getRight());	
 		
+	}
+	
+	public void corner()
+	{
+		cleaner_1.setTRate(-0.15);
+		try {
+			Thread.sleep((long)(((90*d + cleaner_1.calcTurn(0))/0.15)*1000));
+		} catch (InterruptedException e) {
+			
+		}
+			
+		cleaner_1.setTRate(0);		
+		cleaner_1.setSpeed(0.4);
+		while (cleaner_1.getFrontRange() > 0.9) {
+			cleaner_1.setSpeed(FAST);
+			cleaner_1.pause(20);	
+		}
+		cleaner_1.setSpeed(0);
 	}
 
 	/**
@@ -132,52 +161,34 @@ public class WallFollow {
 						
 						if( cleaner_1.getLeftRange() + cleaner_1.getRightRange() < 1.2)
 						{
-							if(cleaner_1.getLeftRange() > cleaner_1.getRightRange())
+							cleaner_1.setSpeed(-0.5);
+							while(cleaner_1.getRightRange() <0.7)
 							{
-								cleaner_1.turn(45*d, 0.5);
-								do	{
-									cleaner_1.setSpeed(-0.1);
-									}
-								while(cleaner_1.getBackRange() > 0.5);
-								
-								cleaner_1.setSpeed(0);
-								cleaner_1.turn(135*d, 0.5);
-								cleaner_1.setSpeed(0.4);
-								
+								cleaner_1.pause(10);
 							}
-							else
-							{
-								cleaner_1.turn(-45*d, 0.5);
-								do	{
-									cleaner_1.setSpeed(-0.1);
-									}
-								while(cleaner_1.getBackRange() > 0.5);
-								
-								cleaner_1.setSpeed(0);
-								cleaner_1.turn(-135*d, 0.5);
-								cleaner_1.setSpeed(0.4);						
-							}
+							cleaner_1.pause(500);
+							cleaner_1.setSpeed(0);
 						}
-						else
-						{
-							cleaner_1.setTRate(-0.3);
+							
+						
+							cleaner_1.setTRate(-0.15);
 							try {
-								Thread.sleep((long)(((180*d + cleaner_1.calcTurn(0))/0.3)*1000));
+								Thread.sleep((long)(((90*d + cleaner_1.calcTurn(0))/0.15)*1000));
 							} catch (InterruptedException e) {
 								
 							}
-							cleaner_1.setTRate(0);
-							cleaner_1.setTRate(0.5);						
-							cleaner_1.pause((long)(((90*d)/0.5)*1000));						
+							//cleaner_1.setTRate(0);
+							//cleaner_1.setTRate(0.5);						
+							//cleaner_1.pause((long)(((90*d)/0.5)*1000));						
 								
 							
 							cleaner_1.setTRate(0);
 							
 							cleaner_1.setSpeed(0.4);
-						}						
+												
 					}
 
-					while (cleaner_1.getFrontRange() > 0.9) {
+					while (cleaner_1.getFrontRange() > 0.8) {
 						
 						
 							cleaner_1.setSpeed(SLOW);
@@ -196,9 +207,9 @@ public class WallFollow {
 							cleaner_1.setSpeed(0.2);
 								while(cleaner_1.getRange(12)*2 < r11);
 								cleaner_1.setSpeed(0);
-								cleaner_1.setTRate(0.2);
+								cleaner_1.setTRate(0.15);
 								try {
-									Thread.sleep((long)((45*d/0.2)*1000));
+									Thread.sleep((long)((45*d/0.15)*1000));
 								} catch (InterruptedException e) {
 									
 								}
@@ -207,9 +218,9 @@ public class WallFollow {
 								cleaner_1.setSpeed(0.2);
 								cleaner_1.pause(500);
 								cleaner_1.setSpeed(0);
-								cleaner_1.setTRate(0.3);
+								cleaner_1.setTRate(0.15);
 								try {
-									Thread.sleep((long)((40*d/0.3)*1000));
+									Thread.sleep((long)((40*d/0.15)*1000));
 								} catch (InterruptedException e) {
 									
 								}
@@ -227,11 +238,11 @@ public class WallFollow {
 						 * Proximity algorithm
 						 */
 
-						if (cleaner_1.getRange(6) < 0.94) {
+						if (cleaner_1.getRange(7) < 0.95) {
 							counter = 1;
 							System.out.println("prox");
-							cleaner_1.setSpeed(-0.4);
-							cleaner_1.pause(1000);
+							cleaner_1.setSpeed(-0.15);
+							cleaner_1.pause(1250);
 							cleaner_1.setSpeed(0);
 							cleaner_1.setTRate(-0.5);
 							try {
@@ -246,7 +257,7 @@ public class WallFollow {
 						
 						
 
-						if (cleaner_1.getRange(2) < 0.94) {
+						if (cleaner_1.getRange(1) < 0.94) {
 							counter = 1;
 							System.out.println("prox");
 							cleaner_1.setSpeed(-0.4);
