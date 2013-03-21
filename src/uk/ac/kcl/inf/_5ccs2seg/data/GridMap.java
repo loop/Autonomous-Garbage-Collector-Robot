@@ -24,16 +24,18 @@ public class GridMap {
 				grid[y][x] = 0;
 			}
 		}
-		/*this.grid = new int[][]{{0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-				{2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-				{2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-				{2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-				{2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-				{2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-				{2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-				{2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-				{2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2},
-				{2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};*/
+		/*
+		 * this.grid = new int[][]{{0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		 * {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		 * {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		 * {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		 * {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		 * {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		 * {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		 * {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		 * {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2},
+		 * {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
+		 */
 	}
 
 	/**
@@ -88,7 +90,7 @@ public class GridMap {
 	 */
 	public synchronized int getSts(double x, double y) {
 		int[] arr = coordToArrayIndexCalc(x, y);
-		//arr[1] is y, arr[0] is x
+		// arr[1] is y, arr[0] is x
 		return grid[arr[1]][arr[0]];
 	}
 
@@ -103,16 +105,16 @@ public class GridMap {
 	 */
 	public int[] coordToArrayIndexCalc(double x, double y) {
 		int[] indexes = new int[2];
-		int tempX = (int)(x * cellsPerMeter) + (maxX / 2) ;
-		int tempY = (int)(-y * cellsPerMeter) + (maxY / 2);
+		int tempX = (int) (x * cellsPerMeter) + (maxX / 2);
+		int tempY = (int) (-y * cellsPerMeter) + (maxY / 2);
 		indexes[0] = tempX;
 		indexes[1] = tempY;
 		return indexes;
 	}
-	
+
 	/**
-	 * Returns the coordinates of a particular cell.
-	 * Assumes that whatever calls this method knows the array is [x,y]
+	 * Returns the coordinates of a particular cell. Assumes that whatever calls
+	 * this method knows the array is [x,y]
 	 * 
 	 * @param x
 	 *            - x coordinate of cell
@@ -122,8 +124,10 @@ public class GridMap {
 	 */
 	public double[] arrayIndexToCoordCalc(int x, int y) {
 		double[] indexes = new double[2];
-		double tempX = (((double)x - ((double)maxX / 2)) / (double)cellsPerMeter) + ((1/cellsPerMeter)/2);
-		double tempY = (-((double)y- ((double)maxY / 2)) / (double)cellsPerMeter) + ((1/cellsPerMeter)/2);
+		double tempX = (((double) x - ((double) maxX / 2)) / (double) cellsPerMeter)
+				+ ((1 / cellsPerMeter) / 2);
+		double tempY = (-((double) y - ((double) maxY / 2)) / (double) cellsPerMeter)
+				+ ((1 / cellsPerMeter) / 2);
 		indexes[0] = tempX;
 		indexes[1] = tempY;
 		return indexes;
@@ -137,7 +141,7 @@ public class GridMap {
 		return maxY;
 	}
 
-	public int[][] getMap(){
+	public int[][] getMap() {
 		return grid;
 	}
 }

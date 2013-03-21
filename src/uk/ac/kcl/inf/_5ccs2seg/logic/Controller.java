@@ -29,11 +29,9 @@ public class Controller implements ActionListener {
 			if (frame.getFileName().length() > 3) {
 				model.addMapOutput(frame.getFileName());
 				model.saveMap();
-				JOptionPane
-				.showMessageDialog(
-						frame,
-						frame.getFileName() + ".png saved to main application folder",
-						"OK", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(frame, frame.getFileName()
+						+ ".png saved to main application folder", "OK",
+						JOptionPane.INFORMATION_MESSAGE);
 			} else {
 				JOptionPane
 						.showMessageDialog(
@@ -54,8 +52,8 @@ public class Controller implements ActionListener {
 			model.explore();
 		}
 		if (actionRequested.equals("Collect")) {
-			model.addCollectionTarget(frame.x1Drop.getText(), 
-					frame.x2Drop.getText(), frame.x3Drop.getText(), frame.x4Drop.getText());
+			model.addCollectionTarget(frame.x1Drop.getText(), frame.x2Drop
+					.getText(), frame.x3Drop.getText(), frame.x4Drop.getText());
 			model.collect();
 		}
 	}

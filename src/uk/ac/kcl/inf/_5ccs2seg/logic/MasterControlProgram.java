@@ -136,7 +136,6 @@ public class MasterControlProgram {
 	public void explore() {
 		if (!getMaping() && !getMapped()) {
 			if (!solo) {
-				System.out.println(getSolo());
 				cleaner1 = new Bot(0, false);
 				new WallFollow(cleaner1, this);
 				new Explore(this, cleaner1);
@@ -148,22 +147,17 @@ public class MasterControlProgram {
 				cleaner3 = new Bot(2, false);
 				new WallFollow(cleaner3, this);
 				new Explore(this, cleaner3);
-				System.out
-						.println("Exploring mappig envi(muti) and probably returning data structure");
 
 			} else {
 				cleaner1 = new Bot(0, false);
 				new WallFollow(cleaner1, this);
 				new Explore(this, cleaner1);
-
-				System.out
-						.println("Exploring mappig envi(solo) and probably returning data structure");
-
 			}
 		}
 	}
 
 	public void collect() {
+
 		if (!getCollect()) {
 
 			if (!solo) {
@@ -195,6 +189,7 @@ public class MasterControlProgram {
 			} else {
 				BufferedImage backup = new BufferedImage(maxSizeOfX,
 						maxSizeOfY, BufferedImage.TYPE_INT_RGB);
+
 				int red = 0xFF0000;
 				int green = 0x00FF00;
 				int blue = 0x0000FF;
@@ -204,6 +199,7 @@ public class MasterControlProgram {
 
 				int scale = 4;
 				int check = 0;
+
 				for (int y = 0; y < (maxSizeOfY / scale); y++) {
 					for (int x = 0; x < (maxSizeOfX / scale); x++) {
 						for (int scaleY = 0; scaleY < scale; scaleY++) {
@@ -267,11 +263,6 @@ public class MasterControlProgram {
 		} else {
 			targetCollectionSize = Math.abs((tempX2 - tempX1));
 		}
-
-		System.out.println("Target mid x: " + targetCollectionPoint[0]);
-		System.out.println("Target mid y: " + targetCollectionPoint[1]);
-
-		System.out.println("Targetbox size: " + targetCollectionSize);
 	}
 
 	public synchronized void setWallF(boolean value) {
@@ -316,5 +307,27 @@ public class MasterControlProgram {
 
 	public synchronized double[] getCPoint() {
 		return targetCollectionPoint;
+	}
+
+	public void runCLI() {
+		while (getArgumentOrder().size() > 0) {
+		String command = getArgumentOrder().remove(0);
+		if (command.equals("-solo")) {
+			MasterControlProgram.setSolo(true);
+		}
+		if (command.equals("-multi")) {
+			MasterControlProgram.setSolo(false);
+		}
+		if (command.equals("-explore")) {
+			explore();
+		}
+		if (command.equals("-map")) {
+			saveMap();
+		}
+		if (command.equals("-collect")) {
+			collect();
+		}
+	}
+		
 	}
 }

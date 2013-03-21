@@ -21,24 +21,7 @@ public class MainApp {
 			mcp.linkFrame(window);
 			window.setVisible(true);
 		} else {
-			while (mcp.getArgumentOrder().size() > 0) {
-				String command = mcp.getArgumentOrder().remove(0);
-				if (command.equals("-solo")) {
-					MasterControlProgram.setSolo(true);
-				}
-				if (command.equals("-multi")) {
-					MasterControlProgram.setSolo(false);
-				}
-				if (command.equals("-explore")) {
-					mcp.explore();
-				}
-				if (command.equals("-map")) {
-					mcp.saveMap();
-				}
-				if (command.equals("-collect")) {
-					mcp.collect();
-				}
-			}
+			mcp.runCLI();
 		}
 	}
 }

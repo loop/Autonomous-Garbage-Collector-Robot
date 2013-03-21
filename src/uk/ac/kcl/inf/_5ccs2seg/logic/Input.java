@@ -3,14 +3,12 @@ package uk.ac.kcl.inf._5ccs2seg.logic;
 public class Input {
 
 	/**
-	 * @param args
-	 *            , mcp
+	 * @param args, mcp
 	 * @author John Murray, Adrian Bocai for Team Dijkstra
 	 * @see Needs some serious cleanup and need to move code into separate
 	 *      methods but it validates all correct options and complains if
 	 *      there's any mistakes in arguments given
 	 */
-
 	public static void ValidateInput(String[] args, MasterControlProgram mcp) {
 
 		if (args.length == 0) {

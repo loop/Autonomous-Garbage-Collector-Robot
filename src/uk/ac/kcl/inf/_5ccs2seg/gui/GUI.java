@@ -56,7 +56,6 @@ public class GUI extends JFrame {
 
 		maxX = (mcp.getGrid().getMaxX() * scale);
 		maxY = (mcp.getGrid().getMaxY() * scale);
-		
 
 		buttonAction = new Controller(mcp, this);
 		initWidgets();
@@ -136,8 +135,8 @@ public class GUI extends JFrame {
 	public String getFileName() {
 		return filename.getText();
 	}
-	
-	public BufferedImage getMapImage(){
+
+	public BufferedImage getMapImage() {
 		return map;
 	}
 
@@ -160,21 +159,18 @@ public class GUI extends JFrame {
 						check = mcp.getGrid().getSts(x, y);
 
 						if (check == 0) {
-							map.setRGB( ((x * scale) + scaleX) , ((y * scale) + scaleY), grey);
-						}
-						else if (check == 1) {
+							map.setRGB(((x * scale) + scaleX),
+									((y * scale) + scaleY), grey);
+						} else if (check == 1) {
 							map.setRGB(((x * scale) + scaleX),
 									((y * scale) + scaleY), white);
-						}
-						else if (check == 2) {
+						} else if (check == 2) {
 							map.setRGB(((x * scale) + scaleX),
 									((y * scale) + scaleY), black);
-						}
-						else if (check == 3) {
+						} else if (check == 3) {
 							map.setRGB(((x * scale) + scaleX),
 									((y * scale) + scaleY), red);
-						}
-						else if (check == 4) {
+						} else if (check == 4) {
 							map.setRGB(((x * scale) + scaleX),
 									((y * scale) + scaleY), blue);
 						}

@@ -429,7 +429,7 @@ public class Bot {
 			a = 13;
 			b = 14;
 		}
-		
+
 		for (int i = 0; i < 10; i++) {
 
 			avgX += getRange(a);
@@ -442,15 +442,12 @@ public class Bot {
 		if ((avgX > (2 * avgY)) || (avgY > (2 * avgX))) {
 			turn = 0;
 		} else {
-			if (d == 0)
-			{ 
+			if (d == 0) {
 				x = 0.025;
-			}
-			else
-			{
+			} else {
 				x = 0.045; // distance between front sensors double x
 			}
-			
+
 			y = Math.abs(avgY - avgX);
 			theta = Math.atan(y / x);
 			turn = 0.0;
@@ -492,11 +489,11 @@ public class Bot {
 		double[] sonarValues = getRanges();
 
 		double lowest = sonarValues[9];
-		
+
 		if (sonarValues[10] < lowest) {
 			lowest = sonarValues[10];
 		}
-		
+
 		return lowest;
 
 	}
@@ -553,7 +550,7 @@ public class Bot {
 		double[] sonarValues = getRanges();
 
 		double lowest = sonarValues[15];
-		
+
 		return lowest;
 	}
 
@@ -642,21 +639,21 @@ public class Bot {
 		switch (low) {
 		case 9: // forward facing sensors
 		case 10:
-		
+
 			return 0;
 
 		case 11: // left side sensors
 		case 12:
-		
+
 			return 90;
 
 		case 13: // right side sensors
 		case 14:
-		
+
 			return -90;
 
 		case 15: // back facing sensors
-		
+
 			return -180;
 
 		default:
@@ -672,14 +669,12 @@ public class Bot {
 	public synchronized double getTRate() {
 		return tRate;
 	}
-	
-	public ArrayList<TargetBox> getStart()
-	{
+
+	public ArrayList<TargetBox> getStart() {
 		return startBox;
 	}
-	
-	public void addStart(TargetBox t)
-	{
+
+	public void addStart(TargetBox t) {
 		startBox.add(t);
 	}
 
@@ -696,5 +691,5 @@ public class Bot {
 	public synchronized void close() {
 		robot.close();
 	}
-	
+
 }
