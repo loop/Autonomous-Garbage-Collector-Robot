@@ -50,6 +50,8 @@ public class Collect {
 		map = mcp.getGrid();
 		garbageL = mcp.getGlist();
 		
+		System.out.println(dropLoc[0] + " .. ." + dropLoc[1]);
+		
 		Thread updateFid = new Thread() {
 			public void run() {
 				PlayerFiducialItem[] fiduc;
@@ -153,7 +155,7 @@ public class Collect {
 				//double y; 
 				//double yaw; 
 				double d;
-				double smallD;
+				double smallD=0;
 				int close = 0;
 				
 				try {
@@ -179,7 +181,7 @@ public class Collect {
 				 for (int i = 0; i< garbageL.size(); i++){
 					 d = Math.sqrt(Math.pow((cleaner1.getX()- garbageL.get(i)[0]),2)+
 								Math.pow((cleaner1.getY()-garbageL.get(i)[1]),2));
-					 if (d < smallD){close = i;}
+					 if (d < smallD){smallD = d; close = i;}
 				 }
 				 
 				 arr2 = map.coordToArrayIndexCalc(garbageL.get(close)[0], garbageL.get(close)[1]);
@@ -261,8 +263,94 @@ public class Collect {
 					}
 					road.clear();
 					
-				
-				
+					double fX=0;
+					double fY=0;
+					int in =0 ;
+					
+					double fSpeed = 0;
+					double tRate = 0;
+
+					int k = 3; // changed to anything
+					int k2= 2;
+
+					double oldX = 0;
+					double curX=0;
+					double oldY = 0;
+					double curY=0;
+					double[] arr3;
+					double alpha;
+					double yaw = cleaner1.getYaw();
+					
+					
+					if (!returnn && !getIm()){
+						while (cleaner1.getGripBeam() == 0 && cleaner1.getFidCount() > 0 ){
+							fiduc = cleaner1.getFiducials();
+						
+							smallD = 30000;
+							for (int i = 0; i< fiduc.length; i++){
+								fX = fiduc[i].getPose().getPx();
+								fY = fiduc[i].getPose().getPy();
+								d = Math.sqrt(Math.pow(fX,2)+Math.pow(fY,2));
+								if (d < smallD){smallD = d; in = i;} 
+							}
+						
+							oldX = curX;
+							curX = fiduc[in].getPose().getPx();
+							fSpeed = k * (curX - 2)+(k2 * (curX - oldX));
+							cleaner1.setSpeed(fSpeed);
+							
+							oldY = curY;
+							curY = fiduc[in].getPose().getPy();
+							tRate = k * curY+(k2 * (curY - oldY));
+							cleaner1.setTRate(tRate);
+							try {
+								Thread.sleep(25);
+							} catch (InterruptedException e) {}
+						
+						
+						}
+						cleaner1.stop();
+						cleaner1.gripper(2);
+						
+						//calc coord of garbage in gripper
+						alpha = yaw + Math.atan(fY/fX);
+						arr3 = Explore.calcCoord(cleaner1.getX(), cleaner1.getY(), alpha, smallD);
+						
+						//remove that garbage from the list
+						smallD = 3000;
+						int index =0;
+						for (int i = 0; i< garbageL.size(); i++){
+							 d = Math.sqrt(Math.pow((arr3[0]- garbageL.get(i)[0]),2)+
+										Math.pow((arr3[1]-garbageL.get(i)[1]),2));
+							 if (d < smallD){smallD = d; index = i;}
+						 }
+						double[] rem = garbageL.remove(index);
+						
+						//remove garbage from map
+						map.setSts(rem[0], rem[1], 1);
+						
+						while (cleaner1.getGripSts() != 2){
+							try {
+								Thread.sleep(50);
+							} catch (InterruptedException e) {}
+						}
+						returnn = true;
+					
+						
+					
+						
+						
+					}
+					else if (returnn && !getIm()){
+						cleaner1.stop();
+						cleaner1.gripper(1);
+						while (cleaner1.getGripSts() != 1){
+							try {
+								Thread.sleep(50);
+							} catch (InterruptedException e) {}
+						}
+						returnn = false;
+					}
 				
 				
 					}
