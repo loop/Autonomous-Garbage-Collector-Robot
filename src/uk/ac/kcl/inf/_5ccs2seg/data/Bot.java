@@ -2,7 +2,6 @@ package uk.ac.kcl.inf._5ccs2seg.data;
 
 import java.util.ArrayList;
 
-import uk.ac.kcl.inf._5ccs2seg.gui.Debug;
 import javaclient3.FiducialInterface;
 import javaclient3.GripperInterface;
 import javaclient3.PlayerClient;
@@ -11,8 +10,8 @@ import javaclient3.Position2DInterface;
 import javaclient3.RangerInterface;
 import javaclient3.structures.PlayerConstants;
 import javaclient3.structures.PlayerPose2d;
-import javaclient3.structures.PlayerPose3d;
 import javaclient3.structures.fiducial.PlayerFiducialItem;
+import uk.ac.kcl.inf._5ccs2seg.gui.Debug;
 
 /**
  * Just a basic robot with all the access and control methods needed to be able

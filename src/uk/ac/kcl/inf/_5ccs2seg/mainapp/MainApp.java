@@ -20,16 +20,25 @@ public class MainApp {
 			GUI window = new GUI(mcp);
 			mcp.linkFrame(window);
 			window.setVisible(true);
+		} else {
+			while (mcp.getArgumentOrder().size() > 0) {
+				String command = mcp.getArgumentOrder().remove(0);
+				if (command.equals("-solo")) {
+					MasterControlProgram.setSolo(true);
+				}
+				if (command.equals("-multi")) {
+					MasterControlProgram.setSolo(false);
+				}
+				if (command.equals("-explore")) {
+					mcp.explore();
+				}
+				if (command.equals("-map")) {
+					mcp.saveMap();
+				}
+				if (command.equals("-collect")) {
+					mcp.collect();
+				}
+			}
 		}
-		
-		while (mcp.getArgumentOrder().size() > 0) {
-			System.out.println(mcp.getArgumentOrder().remove(0));
-		}
-
-		while (mcp.getMapOutputNames().size() > 0) {
-			System.out.println(mcp.getMapOutputNames().remove(0));
-		}
-
 	}
-
 }

@@ -1,10 +1,10 @@
 package uk.ac.kcl.inf._5ccs2seg.logic;
 
-
 public class Input {
-	
+
 	/**
-	 * @param args, mcp
+	 * @param args
+	 *            , mcp
 	 * @author John Murray, Adrian Bocai for Team Dijkstra
 	 * @see Needs some serious cleanup and need to move code into separate
 	 *      methods but it validates all correct options and complains if
@@ -12,7 +12,7 @@ public class Input {
 	 */
 
 	public static void ValidateInput(String[] args, MasterControlProgram mcp) {
-		
+
 		if (args.length == 0) {
 			mcp.setGui(true);
 		}
@@ -35,16 +35,13 @@ public class Input {
 					String checkNext = args[i + 1];
 
 					if (checkNext.charAt(0) != '-') {
-						mcp.getMapOutputNames().add(checkNext);
-						mcp.setNumberOfMaps(mcp.getNumberOfMaps() + 1);
+						mcp.addMapOutput(checkNext);
 						i++;
 					} else {
-						mcp.setNumberOfMaps(mcp.getNumberOfMaps() + 1);
-						mcp.getMapOutputNames().add("output" + mcp.getNumberOfMaps());
+						mcp.addMapOutput("output");
 					}
 				} else {
-					mcp.setNumberOfMaps(mcp.getNumberOfMaps() + 1);
-					mcp.getMapOutputNames().add("output" + mcp.getNumberOfMaps());
+					mcp.addMapOutput("output");
 				}
 
 			} else if (test.equals("-collect")) {
@@ -184,8 +181,9 @@ public class Input {
 					}
 
 					mcp.getArgumentOrder().add(args[i]);
+					mcp.addCollectionTarget(args[i + 1], args[i + 2],
+							args[i + 3], args[i + 4]);
 					i = i + 4;
-
 				}
 			}
 
@@ -194,9 +192,6 @@ public class Input {
 						+ " is not a valid commandline option");
 				System.exit(0);
 			}
-
 		}
-
 	}
-
 }

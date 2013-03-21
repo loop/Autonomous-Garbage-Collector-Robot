@@ -1,8 +1,5 @@
 package uk.ac.kcl.inf._5ccs2seg.logic;
 
-import Explore;
-import WallFollow;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
 
 import uk.ac.kcl.inf._5ccs2seg.data.Bot;
 import uk.ac.kcl.inf._5ccs2seg.data.GridMap;
@@ -57,8 +53,6 @@ public class MasterControlProgram {
 
 	public void setMap(GridMap map) {
 		this.mapRepresentation = map;
-		frame.update();
-
 	}
 
 	public void setNumberOfMaps(int numberOfMaps) {
@@ -140,51 +134,47 @@ public class MasterControlProgram {
 	 * The robot(s) will start to explore and map the environment
 	 */
 	public void explore() {
-		if(!getMaping() && !getMapped()){
-		if (!solo) {
-			System.out.println(getSolo());
-			cleaner1 = new Bot(0, false);
-			new WallFollow(cleaner1,this);
-			new Explore(this, cleaner1);
+		if (!getMaping() && !getMapped()) {
+			if (!solo) {
+				System.out.println(getSolo());
+				cleaner1 = new Bot(0, false);
+				new WallFollow(cleaner1, this);
+				new Explore(this, cleaner1);
 
-			cleaner2 = new Bot(1, false);
-			new WallFollow(cleaner2,this);
-			new Explore(this, cleaner2);
+				cleaner2 = new Bot(1, false);
+				new WallFollow(cleaner2, this);
+				new Explore(this, cleaner2);
 
-			cleaner3 = new Bot(2, false);
-			new WallFollow(cleaner3,this);
-			new Explore(this, cleaner3);
-			System.out
-					.println("Exploring mappig envi(muti) and probably returning data structure");
-			
-		} else {
-			cleaner1 = new Bot(0, false);
-			new WallFollow(cleaner1,this);
-			new Explore(this, cleaner1);
-			cleaner2 = new Bot(1, false);
-			cleaner3 = new Bot(2, false);
-			new WallFollow(cleaner2);
-			new WallFollow(cleaner3);
+				cleaner3 = new Bot(2, false);
+				new WallFollow(cleaner3, this);
+				new Explore(this, cleaner3);
+				System.out
+						.println("Exploring mappig envi(muti) and probably returning data structure");
 
-			System.out
-					.println("Exploring mappig envi(solo) and probably returning data structure");
+			} else {
+				cleaner1 = new Bot(0, false);
+				new WallFollow(cleaner1, this);
+				new Explore(this, cleaner1);
 
-			
-		}
+				System.out
+						.println("Exploring mappig envi(solo) and probably returning data structure");
+
+			}
 		}
 	}
-	
-	public void collect(){
-		if(!getCollect()){
-			
+
+	public void collect() {
+		if (!getCollect()) {
+
 			if (!solo) {
-			
-			}
-			else{
+
+			} else {
 				new Collect(this, cleaner1);
 			}
+		} else if (!getMaping()) {
+			explore();
+			collect();
 		}
-		else if (!getMaping()){explore();collect();}
 	}
 
 	public void linkFrame(GUI frame) {
@@ -197,7 +187,12 @@ public class MasterControlProgram {
 			String name = mapOutputNames.get(0);
 			File saveFile = new File(name + ".png");
 
-			if (!gui) {
+			if (gui) {
+				try {
+					ImageIO.write(frame.getMapImage(), "png", saveFile);
+				} catch (IOException ex) {
+				}
+			} else {
 				BufferedImage backup = new BufferedImage(maxSizeOfX,
 						maxSizeOfY, BufferedImage.TYPE_INT_RGB);
 				int red = 0xFF0000;
@@ -219,34 +214,25 @@ public class MasterControlProgram {
 								if (check == 0) {
 									backup.setRGB(((x * scale) + scaleX),
 											((y * scale) + scaleY), grey);
-								}
-								else if (check == 1) {
+								} else if (check == 1) {
 									backup.setRGB(((x * scale) + scaleX),
 											((y * scale) + scaleY), white);
-								}
-								else if (check == 2) {
+								} else if (check == 2) {
 									backup.setRGB(((x * scale) + scaleX),
 											((y * scale) + scaleY), black);
-								}
-								else if (check == 3) {
+								} else if (check == 3) {
 									backup.setRGB(((x * scale) + scaleX),
 											((y * scale) + scaleY), red);
-								}
-								else if (check == 4) {
+								} else if (check == 4) {
 									backup.setRGB(((x * scale) + scaleX),
-									((y * scale) + scaleY), blue);
-						}
+											((y * scale) + scaleY), blue);
+								}
 							}
 						}
 					}
 				}
 				try {
 					ImageIO.write(backup, "png", saveFile);
-				} catch (IOException ex) {
-				}
-			} else {
-				try {
-					ImageIO.write(frame.getMapImage(), "png", saveFile);
 				} catch (IOException ex) {
 				}
 			}
@@ -295,6 +281,7 @@ public class MasterControlProgram {
 	public synchronized boolean getWallF() {
 		return wallF;
 	}
+
 	public synchronized void setMapped(boolean value) {
 		mapped = value;
 	}
@@ -302,6 +289,7 @@ public class MasterControlProgram {
 	public synchronized boolean getMapped() {
 		return mapped;
 	}
+
 	public synchronized void setMaping(boolean value) {
 		maping = value;
 	}
@@ -309,6 +297,7 @@ public class MasterControlProgram {
 	public synchronized boolean getMaping() {
 		return maping;
 	}
+
 	public synchronized void setCollect(boolean value) {
 		collecting = value;
 	}
@@ -316,6 +305,7 @@ public class MasterControlProgram {
 	public synchronized boolean getCollect() {
 		return collecting;
 	}
+
 	public synchronized void setGlist(ArrayList<double[]> list) {
 		garbageL = list;
 	}
@@ -323,7 +313,7 @@ public class MasterControlProgram {
 	public synchronized ArrayList<double[]> getGlist() {
 		return garbageL;
 	}
-	
+
 	public synchronized double[] getCPoint() {
 		return targetCollectionPoint;
 	}
