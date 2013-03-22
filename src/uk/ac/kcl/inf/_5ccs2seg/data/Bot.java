@@ -249,7 +249,7 @@ public class Bot {
 	 * @param comand
 	 */
 	public synchronized void gripper(int comand) {
-		if (comand == CLOSE) {
+		if (comand == 2) {
 			grip.close();
 		} else {
 			grip.open();

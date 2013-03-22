@@ -9,7 +9,7 @@ import uk.ac.kcl.inf._5ccs2seg.data.Node;
 import javaclient3.structures.fiducial.PlayerFiducialItem;
 
 /**
- * Class that explore the map in solo mode
+ * Class that explore the map
  * 
  * @author Adrian Bocai for Team Dijkstra
  * 
@@ -161,7 +161,7 @@ public class Explore {
 								map.setSts(arr[0], arr[1], 3);
 							}
 
-							// TEST
+							//TEST
 							// for (int j =0; j < garbageL.size(); j++){
 							// double[] arrr = garbageL.get(j);
 							// System.out.println(j + ": " + "(" + arrr[0] +
@@ -228,7 +228,8 @@ public class Explore {
 						Explore.this.mcp.setGlist(garbageL);
 						Explore.this.mcp.setMapped(true);
 						Explore.this.mcp.setMaping(false);
-						System.out.println("Covered");
+						cleaner1.stop();
+						System.out.println("Covered");					
 						break;
 					}
 
@@ -272,7 +273,7 @@ public class Explore {
 						cleaner1.setTRate(0);
 					}
 					for (int i = 0; i < road.size(); i++) {
-						if (i % 4 == 0) {
+						if (i % 2 == 0) {
 							double x = road.get(i)[0];
 							double y = road.get(i)[1];
 
@@ -286,7 +287,7 @@ public class Explore {
 
 							double dist = Math.sqrt((dx * dx) + (dy * dy));
 
-							while (dist > 0.8 && !getIm()) {
+							while (dist > 1.2 && !getIm()) {
 								cleaner1.moveTo(x, y);
 
 								dx = x - cleaner1.getX();
@@ -368,24 +369,29 @@ public class Explore {
 	}
 
 	public void filterNoise() {
-		/*
-		 * for (int i = 1; i < map.getMaxY()-1; i++){ for (int j = 1; j <
-		 * map.getMaxX()-1; j++){
-		 * 
-		 * if (map.getSts(j, i) == 2){ if ((map.getSts(j+1,i) == 1 &&
-		 * map.getSts(j-1,i) == 1) || (map.getSts(j,i+1) == 1 ||
-		 * map.getSts(j,i-1) == 1)){ map.setSts(j, i, 1); } }
-		 * 
-		 * else if (map.getSts(j, i) == 1){ if ((map.getSts(j+1,i) == 2 &&
-		 * map.getSts(j-1,i) == 2) || (map.getSts(j,i+1) == 2 ||
-		 * map.getSts(j,i-1) == 2)){ map.setSts(j, i, 2); } }
-		 * 
-		 * else if (map.getSts(j, i) == 0){ if ((map.getSts(j+1,i) == 2 &&
-		 * map.getSts(j-1,i) == 2) || (map.getSts(j,i+1) == 2 ||
-		 * map.getSts(j,i-1) == 2)){ map.setSts(j, i, 2); } }
-		 * 
-		 * } }
-		 */
+		
+		  for (int i = 1; i < map.getMaxY()-1; i++){ 
+			  for (int j = 1; j <
+		  map.getMaxX()-1; j++){
+		  
+		  if (map.getSts(j, i) == 2){ 
+			  if ((map.getSts(j+1,i) == 1 &&
+		  map.getSts(j-1,i) == 1) && (map.getSts(j,i+1) == 1 &&
+		  map.getSts(j,i-1) == 1))
+			  { map.setSts(j, i, 1); } }
+		  
+		  else if (map.getSts(j, i) == 1){ 
+			  if ((map.getSts(j+1,i) == 2 &&
+		  map.getSts(j-1,i) == 2) || (map.getSts(j,i+1) == 2 &&
+		  map.getSts(j,i-1) == 2)){ map.setSts(j, i, 2); } }
+		  
+		  else if (map.getSts(j, i) == 0){ 
+			  if ((map.getSts(j+1,i) == 2 &&
+		  map.getSts(j-1,i) == 2) || (map.getSts(j,i+1) == 2 &&
+		  map.getSts(j,i-1) == 2)){ map.setSts(j, i, 2); } }
+		 
+		 } }
+		 
 	}
 
 	public synchronized void setFlag(boolean value) {

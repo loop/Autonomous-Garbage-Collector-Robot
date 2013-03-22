@@ -21,7 +21,10 @@ public class MasterControlProgram {
 	private boolean mapped = false;
 	private boolean maping = false;
 	private boolean collecting = false;
+	private boolean finished = false;
 	private boolean wallF = false;
+	private boolean explore = false;
+	private boolean collect = false;
 	private int numberOfMaps = 0;
 	private ArrayList<double[]> garbageL;
 	private List<String> argumentOrder = new LinkedList<String>();
@@ -197,7 +200,7 @@ public class MasterControlProgram {
 				int grey = 0x888888;
 				int white = 0xFFFFFF;
 
-				int scale = 4;
+				int scale = 2;
 				int check = 0;
 
 				for (int y = 0; y < (maxSizeOfY / scale); y++) {
@@ -296,6 +299,13 @@ public class MasterControlProgram {
 	public synchronized boolean getCollect() {
 		return collecting;
 	}
+	public synchronized void setFinished(boolean value) {
+		finished = value;
+	}
+
+	public synchronized boolean getFinished() {
+		return finished;
+	}
 
 	public synchronized void setGlist(ArrayList<double[]> list) {
 		garbageL = list;
@@ -319,12 +329,49 @@ public class MasterControlProgram {
 			MasterControlProgram.setSolo(false);
 		}
 		if (command.equals("-explore")) {
+			explore = true;
 			explore();
 		}
 		if (command.equals("-map")) {
-			saveMap();
+			if (explore){
+				Thread exp= new Thread() {
+					public void run() {
+						explore = false;
+				while (!getMapped()){
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+				}
+				}
+				
+					saveMap();
+					
+				
+					}};
+					exp.start();
+			}
+			if(collect){
+				Thread col = new Thread() {
+					public void run() {
+						collect = false;
+				while (!getFinished()){
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+				}
+				}
+				
+				saveMap();
+				
+				
+					}};
+					col.start();
+			}
+			
+			
 		}
 		if (command.equals("-collect")) {
+			collect = true;
 			collect();
 		}
 	}
