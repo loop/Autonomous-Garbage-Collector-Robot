@@ -153,6 +153,8 @@ public class MasterControlProgram {
 
 			} else {
 				cleaner1 = new Bot(0, false);
+				
+				
 				new WallFollow(cleaner1, this);
 				new Explore(this, cleaner1);
 			}
@@ -190,8 +192,6 @@ public class MasterControlProgram {
 				} catch (IOException ex) {
 				}
 			} else {
-				BufferedImage backup = new BufferedImage(maxSizeOfX,
-						maxSizeOfY, BufferedImage.TYPE_INT_RGB);
 
 				int red = 0xFF0000;
 				int green = 0x00FF00;
@@ -203,8 +203,11 @@ public class MasterControlProgram {
 				int scale = 2;
 				int check = 0;
 
-				for (int y = 0; y < (maxSizeOfY / scale); y++) {
-					for (int x = 0; x < (maxSizeOfX / scale); x++) {
+				BufferedImage backup = new BufferedImage((maxSizeOfX * scale),
+						(maxSizeOfY * scale), BufferedImage.TYPE_INT_RGB);
+
+				for (int y = 0; y < maxSizeOfY; y++) {
+					for (int x = 0; x < maxSizeOfX; x++) {
 						for (int scaleY = 0; scaleY < scale; scaleY++) {
 							for (int scaleX = 0; scaleX < scale; scaleX++) {
 
@@ -225,6 +228,10 @@ public class MasterControlProgram {
 								} else if (check == 4) {
 									backup.setRGB(((x * scale) + scaleX),
 											((y * scale) + scaleY), blue);
+								}
+								else if (check == 6) {
+									backup.setRGB(((x * scale) + scaleX),
+											((y * scale) + scaleY), white);
 								}
 							}
 						}
@@ -278,6 +285,7 @@ public class MasterControlProgram {
 
 	public synchronized void setMapped(boolean value) {
 		mapped = value;
+		frame.setMapped();
 	}
 
 	public synchronized boolean getMapped() {
@@ -301,6 +309,7 @@ public class MasterControlProgram {
 	}
 	public synchronized void setFinished(boolean value) {
 		finished = value;
+		frame.setCollected();
 	}
 
 	public synchronized boolean getFinished() {

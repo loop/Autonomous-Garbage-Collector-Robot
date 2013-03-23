@@ -466,6 +466,14 @@ public class Bot {
 	 * @return the readings of all the range sensors, in meters.
 	 */
 	public synchronized double[] getRanges() {
+		while(rangerReadings == null)
+		{
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				
+			}
+		}
 		return rangerReadings;
 	}
 

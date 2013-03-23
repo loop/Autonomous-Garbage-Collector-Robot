@@ -49,7 +49,7 @@ public class NextLoc {
 								break main;
 							}
 						} else if (map[i][j] == 9 || map[i][j] == 2
-								|| map[i][j] == 8) {
+								|| map[i][j] == 8 || map[i][j] == 6) {
 						} else if (map[i][j] == 1
 								&& list.indexOf(new Node(i, j)) < 0) {
 							list.add(new Node(i, j));

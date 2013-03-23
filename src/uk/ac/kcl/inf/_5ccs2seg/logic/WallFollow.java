@@ -42,7 +42,14 @@ public class WallFollow {
 	 */
 	public WallFollow(Bot cleaner) {
 		cleaner_1 = cleaner;
-		findNearestWall();
+		cleaner_1.turnTo(90);
+		while(cleaner_1.getBackRange() > 0.4 )
+		{
+			cleaner_1.setSpeed(-0.4);
+			cleaner_1.pause(20);
+		}
+		cleaner_1.setSpeed(0);
+
 
 	}
 
@@ -93,6 +100,19 @@ public class WallFollow {
 
 		}
 		cleaner_1.setSpeed(0);
+		
+		cleaner_1.turn(-90*d, 0.5);
+		
+		while (cleaner_1.getFrontRange() > 0.9) {
+			cleaner_1.setSpeed(FAST);
+			cleaner_1.pause(20);
+
+		}
+		
+		cleaner_1.setSpeed(0);
+		
+		
+		
 
 	}
 
@@ -103,9 +123,7 @@ public class WallFollow {
 		in = true;
 		prevIn = true;
 
-		System.out.println("Y top = " + start.getTop() + " Y bottom = "
-				+ start.getBottom() + "\n X left = " + start.getLeft()
-				+ " X Right = " + start.getRight());
+		
 
 	}
 
@@ -165,14 +183,14 @@ public class WallFollow {
 
 						cleaner_1.setTRate(-0.15);
 						try {
-							Thread.sleep((long) (((90 * d + cleaner_1
+							Thread.sleep((long) (((180 * d + cleaner_1
 									.calcTurn(0)) / 0.15) * 1000));
 						} catch (InterruptedException e) {
 
 						}
-						// cleaner_1.setTRate(0);
-						// cleaner_1.setTRate(0.5);
-						// cleaner_1.pause((long)(((90*d)/0.5)*1000));
+						 cleaner_1.setTRate(0);
+						 cleaner_1.setTRate(0.5);
+						 cleaner_1.pause((long)(((90*d)/0.5)*1000));
 
 						cleaner_1.setTRate(0);
 
@@ -229,7 +247,7 @@ public class WallFollow {
 
 						if (cleaner_1.getRange(7) < 0.95) {
 							counter = 1;
-							System.out.println("prox");
+						
 							cleaner_1.setSpeed(-0.15);
 							cleaner_1.pause(1250);
 							cleaner_1.setSpeed(0);
@@ -246,7 +264,7 @@ public class WallFollow {
 
 						if (cleaner_1.getRange(1) < 0.94) {
 							counter = 1;
-							System.out.println("prox");
+						
 							cleaner_1.setSpeed(-0.4);
 							cleaner_1.pause(1000);
 							cleaner_1.setSpeed(0);
@@ -309,7 +327,7 @@ public class WallFollow {
 								&& cleaner_1.getStart().get(count).checkTarget(
 										cleaner_1.getX(), cleaner_1.getY())) {
 							mcp.setWallF(true);
-							System.out.println("2");
+							
 							STOP = true;
 
 						}
@@ -337,7 +355,7 @@ public class WallFollow {
 							Thread.sleep(90000);
 						} catch (InterruptedException e) {
 						}
-						System.out.println(cleaner_1.getBot() + " OwnBox go");
+						
 						counter = true;
 					}
 					for (int count = 0; count < cleaner_1.getStart().size(); count++) {
@@ -346,7 +364,7 @@ public class WallFollow {
 								cleaner_1.getX(), cleaner_1.getY())) {
 
 							mcp.setWallF(true);
-							System.out.println("1");
+						
 							STOP = true;
 
 						}

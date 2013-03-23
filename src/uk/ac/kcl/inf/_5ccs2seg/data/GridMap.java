@@ -144,4 +144,55 @@ public class GridMap {
 	public int[][] getMap() {
 		return grid;
 	}
+	
+	public void thickenWalls()
+	{		
+				
+		for(int i = 0; i < this.getMaxY(); i++)
+		{
+			for(int j = 0; j < this.getMaxX(); j++)
+			{				
+				if( this.getMap()[i][j] == 2 && this.getMap()[i][j-1] == 1 && this.getMap()[i][j-2] == 1 && j-5 > 0 )
+				{
+					this.getMap()[i][j-1] = 6;
+					this.getMap()[i][j-2] = 6;
+					this.getMap()[i-1][j-1] = 6;
+					this.getMap()[i+1][j-1] = 6;
+					
+				}
+				if( this.getMap()[i][j] == 2 && this.getMap()[i-1][j] == 1 && this.getMap()[i-2][j] == 1 && i-5 > 0)
+				{
+					this.getMap()[i-1][j] = 6;
+					this.getMap()[i-2][j] = 6;
+					//this.getMap()[i-3][j] = 2;
+					
+				}			
+			}
+		}	
+		
+		for(int i = this.getMaxY() - 1; i >=0; i--)
+		{
+			for(int j = this.getMaxX() - 1; j >= 0; j--)
+			{				
+				if( this.getMap()[i][j] == 2 && this.getMap()[i][j+1] == 1 && this.getMap()[i][j+2] == 1 && j+5 < this.getMaxX())
+				{
+					this.getMap()[i][j+1] = 6;
+					this.getMap()[i][j+2] = 6;
+					this.getMap()[i+1][j+1] = 6;
+					this.getMap()[i+1][j-1] = 6;
+					
+					
+					
+				}
+				if( this.getMap()[i][j] == 2 && this.getMap()[i+1][j] == 1 && this.getMap()[i+2][j] == 1 && i +5 < this.getMaxX())
+				{
+					this.getMap()[i+1][j] = 6;
+					this.getMap()[i+2][j] = 6;
+					//this.getMap()[i+3][j] = 2;
+										
+				}			
+			}
+		}		
+		
+	}
 }

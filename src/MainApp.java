@@ -1,4 +1,6 @@
-package uk.ac.kcl.inf._5ccs2seg.mainapp;
+
+
+import java.io.IOException;
 
 import uk.ac.kcl.inf._5ccs2seg.gui.GUI;
 import uk.ac.kcl.inf._5ccs2seg.logic.Input;

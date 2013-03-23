@@ -225,12 +225,12 @@ public class AStarAlg {
 				
 			
 		for (int z = 1; z<=10; z++){
-			if (map.getMap()[arr[0] + difI][arr[1] + difJ] == 2){
+			if (map.getMap()[arr[0] + difI][arr[1] + difJ] == 6){
 				score = 880 - (z * 80);
 				if (z == 1){ score = score + 5000;}
-				//else if (z == 2){ score = score + 500000;}
-				//else if (z == 3){ score = score + 300000;}
-				//else if (z == 4){ score = score + 100000;}
+				else if (z == 2){ score = score + 3000;}
+				else if (z == 3){ score = score + 300;}
+		
 				
 				if (score > bScore) {bScore = score;}
 				break;

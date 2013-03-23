@@ -66,7 +66,10 @@ public class Explore {
 						ang = ang + 5;
 
 						if (range < 5) {
-							map.setSts(arr[0], arr[1], 2);
+							if (map.getSts(arr[0], arr[1]) != 3){
+								map.setSts(arr[0], arr[1], 2);
+							}
+							
 						}
 						while (range > 0) {
 							arr = calcCoord(x, y, alpha, range);
@@ -187,30 +190,38 @@ public class Explore {
 				int[] arr;
 				ArrayList<double[]> road = new ArrayList<double[]>();
 
-				System.out.println(Explore.this.mcp.getWallF());
+				
 				while (!Explore.this.mcp.getWallF()) {
-					try {
+				try {
 						Thread.sleep(500);
 					} catch (InterruptedException e) {
 					}
 				}
 
 				filterNoise();
-
+				map.thickenWalls();
+				
 				while (!getFlag()) {
 					try {
 						Thread.sleep(25);
 					} catch (InterruptedException e) {
 					}
+					
+					//while (getIm()){
+						//try {
+							//Thread.sleep(50);
+						//} catch (InterruptedException e) {
+						//}
+				//	}
 
 					arr = map.coordToArrayIndexCalc(cleaner1.getX(), cleaner1
 							.getY());
 					start = new Node(arr[1], arr[0]);
-					System.out.println("issuse");
+					
 					goal = new NextLoc(start, map).calc();
 
 					//
-					System.out.println(goal);
+					
 
 					// DISPLAY PATH
 					if (path != null) {
@@ -225,6 +236,7 @@ public class Explore {
 
 						setFlag(true);
 						filterNoise();
+						map.thickenWalls();
 						Explore.this.mcp.setGlist(garbageL);
 						Explore.this.mcp.setMapped(true);
 						Explore.this.mcp.setMaping(false);
@@ -255,14 +267,6 @@ public class Explore {
 						road.add(arrr);
 					}
 
-					// TEST
-
-					for (int i = 0; i < road.size(); i++) {
-						double[] arrrr = road.get(i);
-						System.out.println(i + ": " + "(" + arrrr[0] + ", "
-								+ arrrr[1] + ")");
-					}
-					System.out.println();
 
 					// FOLLOW PATH
 					//
@@ -321,18 +325,24 @@ public class Explore {
 					}
 				}
 				while (!getFlag()) {
-					for (int i = 9; i < 16; i++) {
-						if (cleaner1.getRange(i) < 0.25) {
-							setIm(true);
-							System.out.println(cleaner1.getRange(i));
-							cleaner1.stop();
-							try {
-								Thread.sleep(1200);
-							} catch (InterruptedException e) {
+					for (int i = 0; i < 9; i += 7) {
+						if (cleaner1.getRange(i) < 1) {							
+							
+								setIm(true);
+								cleaner1.setSpeed(-0.15);
+								cleaner1.pause(1250);
+								cleaner1.setSpeed(0);
+								int sign = 1;
+								if( i == 8) sign *= -1; 
+								cleaner1.turn(Math.toRadians(6*sign), 0.5);								
+								
+								
+							
 							}
-						}
+						
 					}
-
+					setIm(false);
+					
 					try {
 						Thread.sleep(25);
 					} catch (InterruptedException e) {
@@ -341,7 +351,7 @@ public class Explore {
 			}
 		};
 		collision.setPriority(Thread.MAX_PRIORITY);
-		collision.start();
+		//collision.start();
 
 	}
 
@@ -359,12 +369,15 @@ public class Explore {
 		if (map.getSts(i, j) == 0) {
 			return true;
 		}
-		if (map.getSts(i, j) == 2 && counter == 12) {
+		else if (map.getSts(i, j) == 2 && counter == 12) {
 			return true;
 
-		} else {
+		} 
+		else {
 			return false;
 		}
+		
+		
 
 	}
 
@@ -409,5 +422,6 @@ public class Explore {
 	public synchronized boolean getIm() {
 		return imminent;
 	}
+	
 
 }

@@ -59,7 +59,7 @@ public class Collect {
 		map = mcp.getGrid();
 		garbageL = mcp.getGlist();
 		
-		System.out.println(dropLoc[0] + " .. ." + dropLoc[1]);
+
 		
 		Thread updateFid = new Thread() {
 			public void run() {
@@ -180,8 +180,15 @@ public class Collect {
 						Thread.sleep(25);
 					} catch (InterruptedException e) {
 					}
+					//while(getRet()){
+						//try {
+						//	Thread.sleep(50);
+						//} catch (InterruptedException e) {
+						//}
+
+					//}
 				
-				if (garbageL.isEmpty()){
+				if (garbageL.isEmpty() && !getRet()){
 					setFlag(true);
 					mcp.setFinished(true);
 					cleaner1.close();
@@ -192,14 +199,6 @@ public class Collect {
 				 arr = map.coordToArrayIndexCalc(cleaner1.getX(), cleaner1.getY());
 				 start = new Node(arr[1],arr[0]);
 				 
-				 //Test
-				 System.out.println("Begin");
-				 for (int j =0; j < garbageL.size(); j++){
-					 double[] arrr = garbageL.get(j);
-					System.out.println(j + ": " + "(" + arrr[0] +
-					", " + arrr[1] + ")");
-					 }
-				  System.out.println();
 				
 				 
 				 if (!getRet()){
@@ -210,7 +209,6 @@ public class Collect {
 					 if (d < smallD){smallD = d; close = i;}
 				 }
 				 count++;
-				 System.out.println("Garbage coord:" + count + ". " + garbageL.get(close)[0] + "......" + garbageL.get(close)[1]);
 				 
 				 arr2 = map.coordToArrayIndexCalc(garbageL.get(close)[0], garbageL.get(close)[1]);
 				 
@@ -221,7 +219,7 @@ public class Collect {
 				 
 				
 				 //
-				 System.out.println(goal);
+				
 				
 				  //DISPLAY PATH
 				if (path != null){
@@ -309,18 +307,19 @@ public class Collect {
 		Thread collision= new Thread() {
 			public void run() {
 				while (!getFlag()) {
-					for (int i = 9; i < 16; i++){
-						if (cleaner1.getRange(i) < 0.25){
-							setIm(true);
-							System.out.println(cleaner1.getRange(i));
-							cleaner1.stop();
-							try {
-								Thread.sleep(1200);
-							} catch (InterruptedException e) {
-							}
-						}
-					}
+					for (int i = 0; i < 9; i += 7) {
+						if (cleaner1.getRange(i) < 1) {							
+							
+								setIm(true);
+								cleaner1.stop();
+								try {
+									Thread.sleep(1200);
+								} catch (InterruptedException e) {
+								}
 					
+							}
+						
+					}
 					try {
 						Thread.sleep(25);
 					} catch (InterruptedException e) {
@@ -329,7 +328,7 @@ public class Collect {
 			}
 		};
 		collision.setPriority(Thread.MAX_PRIORITY);	
-		collision.start();
+		//collision.start();
 	}
 	
 	public void cont(){
@@ -346,13 +345,9 @@ public class Collect {
 		double fSpeed = 0;
 		double tRate = 0;
 
-		int k = 2; // changed to anything
-		int k2= 2;
 		PlayerFiducialItem[] fiduc;
 
-		double oldX = 0;
 		double curX=0;
-		double oldY = 0;
 		double curY=0;
 		double[] arr3;
 		double alpha;
@@ -362,11 +357,11 @@ public class Collect {
 		
 		if (!getRet()){
 			
-		
+		loop:
 			while (true){
 				if(getFC() <= 0){
 					cleaner1.stop();
-					while (getFC() <= 0)
+					while (getFC() <= 0 && !colArea())
 					{
 						count++;
 						if (count >= 125){
@@ -407,24 +402,72 @@ public class Collect {
 				while (cleaner1.getGripBeam() == 0){
 					fiduc = cleaner1.getFiducials();
 			
+					
+					
 					smallD = 30000;
 					for (int i = 0; i< fiduc.length; i++){
 						if (fiduc[i].getId() == 1) {continue;}
 						fX = fiduc[i].getPose().getPx();
 						fY = fiduc[i].getPose().getPy();
+						
+						double ddd = Math.sqrt(Math.pow((dropLoc[0]- fX),2)+
+								Math.pow((dropLoc[1]-fY),2));
+						
+						if (ddd < 2){continue;}
+						
 						d = Math.sqrt(Math.pow(fX,2)+Math.pow(fY,2));
 						if (d < smallD){smallD = d; in = i;} 
 					}
 					
-					oldX = curX;
+					if (getFC() <= 0){
+						break loop;
+					}
+					
 					curX = fiduc[in].getPose().getPx();
-					fSpeed = k * (curX)+(k2 * (curX - oldX));
+					fSpeed = curX - 0.4;
 					cleaner1.setSpeed(fSpeed);
 				
-					oldY = curY;
 					curY = fiduc[in].getPose().getPy();
-					tRate = k * curY+(k2 * (curY - oldY));
+					tRate = curY;
 					cleaner1.setTRate(tRate);
+					
+					
+					if (cleaner1.getRange(7) < 0.85) {
+						
+					
+						cleaner1.setSpeed(-0.15);
+						cleaner1.pause(1250);
+						cleaner1.setSpeed(0);
+						cleaner1.setTRate(-0.5);
+						try {
+							Thread.sleep((long) ((10 * d / 0.5) * 1000));
+						} catch (InterruptedException e) {
+
+						}
+						cleaner1.setTRate(0);
+						// turn( - (10 * d), 0.5);
+						cleaner1.setSpeed(0.4);
+						cleaner1.pause(1000);
+					}
+
+					if (cleaner1.getRange(1) < 0.84) {
+						
+					
+						cleaner1.setSpeed(-0.4);
+						cleaner1.pause(1000);
+						cleaner1.setSpeed(0);
+						cleaner1.setTRate(0.5);
+						try {
+							Thread.sleep((long) ((10 * d / 0.5) * 1000));
+						} catch (InterruptedException e) {
+
+						}
+						cleaner1.setTRate(0);
+						// turn((10 * d), 0.5);
+						cleaner1.setSpeed(0.4);
+						cleaner1.pause(1000);
+						
+					}
 				
 					try {
 						Thread.sleep(25);
@@ -436,12 +479,35 @@ public class Collect {
 					Thread.sleep(20);
 				} catch (InterruptedException e) {}
 				cleaner1.stop();
-				System.out.println("start");
+			
+				
+				smallD = 30000;
+				fiduc = cleaner1.getFiducials();
+				for (int i = 0; i< fiduc.length; i++){
+					if (fiduc[i].getId() == 1) {continue;}
+					fX = fiduc[i].getPose().getPx();
+					fY = fiduc[i].getPose().getPy();
+					
+					double ddd = Math.sqrt(Math.pow((dropLoc[0]- fX),2)+
+							Math.pow((dropLoc[1]-fY),2));
+					
+					if (ddd < 2){continue;}
+					
+					d = Math.sqrt(Math.pow(fX,2)+Math.pow(fY,2));
+					if (d < smallD){smallD = d; in = i;} 
+				}
+				 
+				fX = fiduc[in].getPose().getPx();
+				fY = fiduc[in].getPose().getPy();
+				yaw = cleaner1.getYaw();
+				
+				
+				alpha = yaw + Math.atan(fY/fX);
+				arr3 = Explore.calcCoord(cleaner1.getX(), cleaner1.getY(), alpha, smallD);
 				cleaner1.gripper(2);
 			
 				//calc coord of garbage in gripper
-				alpha = yaw + Math.atan(fY/fX);
-				arr3 = Explore.calcCoord(cleaner1.getX(), cleaner1.getY(), alpha, smallD);
+				
 			
 				//remove that garbage from the list
 				smallD = 3000;
@@ -457,16 +523,9 @@ public class Collect {
 				} catch (InterruptedException e) {}
 				garbageL.remove(index);
 				
-				//Test
-				 System.out.println(count + ".  End");
-				 for (int j =0; j < garbageL.size(); j++){
-					 double[] arrr = garbageL.get(j);
-					System.out.println(j + ": " + "(" + arrr[0] +
-					", " + arrr[1] + ")");
-					 }
-				  System.out.println();
 				
-			
+				
+				
 				//remove garbage from map
 				map.setSts(rem[0], rem[1], 1);
 			
@@ -476,8 +535,8 @@ public class Collect {
 					} catch (InterruptedException e) {}
 				}
 				setRet(true);
-				System.out.println("here");
-				break;}
+			
+				break loop;}
 			
 		}
 		}
@@ -516,6 +575,35 @@ public class Collect {
 	public synchronized boolean getRet() {
 		return returnn;
 	}
+	
+	public boolean colArea(){
+		if (getFC() > 0){
+			int count = 0;
+			
+			PlayerFiducialItem[] fid = cleaner1.getFiducials();
+			for(int i = 0; i < fid.length; i++){
+				
+				if (fid[i].getId() == 1) {count ++; continue;}
+				
+				double fX = fid[i].getPose().getPx();
+				double fY = fid[i].getPose().getPy();
+				
+				double d = Math.sqrt(Math.pow((dropLoc[0]- fX),2)+
+						Math.pow((dropLoc[1]-fY),2));
+				
+				if (d < 2) {count ++;}
+			}
+			
+			if (count == fid.length){return true;}
+			return false;
+		}
+		
+		
+	
+		
+		return false;
+	}
+	
 	
 	public synchronized int getFC() {
 		PlayerFiducialItem[] fiduc = cleaner1.getFiducials();

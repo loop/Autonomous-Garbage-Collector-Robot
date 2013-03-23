@@ -40,6 +40,8 @@ public class GUI extends JFrame {
 	private JLabel x2Label;
 	private JLabel x3Label;
 	private JLabel x4Label;
+	private JLabel mappedLabel;
+	private JLabel collectedLabel;
 
 	private Controller buttonAction;
 	private JScrollPane mapView;
@@ -90,16 +92,22 @@ public class GUI extends JFrame {
 		x2Label = new JLabel("y1:");
 		x3Label = new JLabel("x2:");
 		x4Label = new JLabel("y2:");
+		mappedLabel = new JLabel("Mapped: No");
+		collectedLabel = new JLabel("Collected: No");
 		setLayout(new BorderLayout(1, 1));
 
 		JPanel a1 = new JPanel();
 		a1.add(filename);
 		a1.add(saveMap);
 
+		JPanel a1a = new JPanel();
+		a1a.add(mappedLabel);
+		a1a.add(exploreMap);
+
 		JPanel a2 = new JPanel();
 		a2.setLayout(new BoxLayout(a2, BoxLayout.PAGE_AXIS));
 		a2.add(a1);
-		a2.add(exploreMap);
+		a2.add(a1a);
 
 		JPanel a3 = new JPanel();
 		a3.add(a2);
@@ -115,10 +123,14 @@ public class GUI extends JFrame {
 		b1.add(x4Label);
 		b1.add(x4Drop);
 
+		JPanel b1a = new JPanel();
+		b1a.add(collectedLabel);
+		b1a.add(collectGarbage);
+
 		JPanel b2 = new JPanel();
 		b2.setLayout(new BoxLayout(b2, BoxLayout.PAGE_AXIS));
 		b2.add(b1);
-		b2.add(collectGarbage);
+		b2.add(b1a);
 
 		JPanel b3 = new JPanel();
 		b3.add(b2);
@@ -173,11 +185,16 @@ public class GUI extends JFrame {
 						} else if (check == 4) {
 							map.setRGB(((x * scale) + scaleX),
 									((y * scale) + scaleY), blue);
+						} else if (check == 6) {
+							map.setRGB(((x * scale) + scaleX),
+									((y * scale) + scaleY), green);
 						}
+
 					}
 				}
 			}
 		}
+
 		repaint();
 	}
 
@@ -187,6 +204,14 @@ public class GUI extends JFrame {
 
 	public void setSolo() {
 		switchSoloMulti.setText("Solo");
+	}
+
+	public void setMapped() {
+		mappedLabel.setText("Mapped: Yes");
+	}
+
+	public void setCollected() {
+		collectedLabel.setText("Collected: Yes");
 	}
 
 	public GUI linkFrame() {
